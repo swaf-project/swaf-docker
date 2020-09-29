@@ -40,7 +40,7 @@ Additional compiled libraries & binaries:
 
 TODO add links
 
-From [https://www.nginx.com/resources/wiki/modules/](https://www.nginx.com/resources/wiki/modules/):
+From [NGINX 3rd Party Modules](https://www.nginx.com/resources/wiki/modules/):
 
 * [https://github.com/leev/ngx_http_geoip2_module](https://github.com/leev/ngx_http_geoip2_module)
 * NAXSI
@@ -117,7 +117,7 @@ TODO
 
 ## Credits
 
-* sWAF Project logo is a [photo](https://unsplash.com/photos/Yre4PGYWCNE) by [sebastiaan stam](https://unsplash.com/@sebastiaanstam) from [Unsplash](https://unsplash.com/) ([License](https://unsplash.com/license))
+* The sWAF Project logo is a [photo](https://unsplash.com/photos/Yre4PGYWCNE) by [sebastiaan stam](https://unsplash.com/@sebastiaanstam) on [Unsplash](https://unsplash.com/) ([License](https://unsplash.com/license))
 
 * **Shields.io** - Badges as a service [![CC0-1.0 license](http://i.creativecommons.org/p/zero/1.0/88x15.png)](https://raw.githubusercontent.com/badges/shields/master/LICENSE)
 
