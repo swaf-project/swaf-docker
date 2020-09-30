@@ -15,7 +15,6 @@
 * ACME.sh for **Let’s Encrypt** support (_Not Yet Implemented_)
 * **logrotate** (_Not Yet Implemented_)
 * **TLS 1.3** support (_To Be Checked_)
-* **webproc** - a lightweight WebUI to easily access configuration files and be able to restart processes
 
 ## Build details
 
@@ -63,7 +62,6 @@ Redis server v=5.0.9 sha=869dcbdc:0 malloc=libc bits=64 build=5e0aa57c0bc626b1
 |[NAXSI](https://github.com/nbs-system/naxsi)*|1.1a|
 |[LibreSSL](https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/)|3.2.1|
 |[NGINX](http://nginx.org/download/)|1.19.2|
-|[webproc](https://github.com/jpillora/webproc)|0.4.0|
 
 \* [NGINX 3rd Party Modules](https://www.nginx.com/resources/wiki/modules/).
 
