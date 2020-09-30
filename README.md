@@ -1,49 +1,75 @@
 # sWAF - A simple WAF docker image
 
-**sWAF** is a **simple Web Application Firewall** docker image, pre-configured to be easily used within your web services. It runs [NGINX](https://www.nginx.com/) as a dedicated reverse proxy with [ModSecurity v3](https://github.com/SpiderLabs/ModSecurity/tree/v3/master) and [NAXSI](https://github.com/nbs-system/naxsi) for the security layers, all over an [Alpine Linux](https://www.alpinelinux.org/) image. The goal is to offer a simple WAF docker image acting as a security device ready to be deploy wherever into your network infrastructure:
+**sWAF** is a **simple Web Application Firewall** docker image, pre-configured to be easily used with your web services architecture. It runs [NGINX](https://www.nginx.com/) as a dedicated reverse proxy with [ModSecurity v3](https://www.modsecurity.org/) and [NAXSI](https://github.com/nbs-system/naxsi) for the security layers, all over an [Alpine Linux](https://www.alpinelinux.org/) image. The goal is to offer a simple WAF docker image acting as a security device ready to be deploy wherever into your network infrastructure:
 
-**[Web Client]** --`hxxp(s)://my.owncloud.com`--> **[SWAF (Listeners>TLS>Security>rProxying)]** --`hxxp(s)://my.owncloud.local`--> **[mywebservice1]**
+**[Web Client]** --`hxxp(s)://my.owncloud.com`--> **[sWAF (Listeners>TLS>Security>rProxying)]** --`hxxp(s)://my.owncloud.local`--> **[mywebservice1]**
 
 [![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-docker?sort=semver&logo=docker)](https://hub.docker.com/repository/docker/swafproject/swaf-docker)
 [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-docker?sort=semver&logo=docker)](https://hub.docker.com/repository/docker/swafproject/swaf-docker)
 [![Build Status](https://img.shields.io/travis/swafproject/swaf-docker/master.svg?logo=travis&label=master)](https://travis-ci.org/swaf-project/swaf-docker)
 [![License](https://img.shields.io/github/license/swaf-project/swaf-docker?color=blue)](https://raw.githubusercontent.com/swaf-project/swaf-docker/master/LICENSE)
 
-## Build information
+## Features
 
-### Features
+* **NGINX** with **LibreSSL**, **ModSecurity** & **NAXSI**
+* ACME.sh for **Let’s Encrypt** support (_Not Yet Implemented_)
+* **logrotate** (_Not Yet Implemented_)
+* **TLS 1.3** support (_To Be Checked_)
+* **webproc** - a lightweight WebUI to easily access configuration files and be able to restart processes
 
-* NGINX with LibreSSL, ModSecurity & NAXSI
-* ACME with Let’s Encrypt support (_Not Yet Implemented_)
-* logrotate (_Not Yet Implemented_)
-* TLS 1.3 support (_To Be Checked_)
-* [**webproc**](https://github.com/jpillora/webproc/) - a lightweight WebUI to easily access configuration files and be able to restart processes (_Not Yet Implemented_)
+## Build details
 
-### Build details
+Build on **Alpine Linux 3.12.0**.
 
-Build on Alpine Linux 3.12.0 with:
+### Alpine system binaries
 
-* TODO add installed packages versions
+```shell
+# curl -V
+curl 7.69.1 (x86_64-alpine-linux-musl) libcurl/7.69.1 OpenSSL/1.1.1g zlib/1.2.11 nghttp2/1.41.0
+Release-Date: 2020-03-11
+Protocols: dict file ftp ftps gopher http https imap imaps pop3 pop3s rtsp smb smbs smtp smtps telnet tftp
+Features: AsynchDNS HTTP2 HTTPS-proxy IPv6 Largefile libz NTLM NTLM_WB SSL TLS-SRP UnixSockets
+```
 
-Additional compiled libraries & binaries:
+```shell
+# git --version
+git version 2.26.2
+```
+
+```shell
+# redis-server -v
+Redis server v=5.0.9 sha=869dcbdc:0 malloc=libc bits=64 build=5e0aa57c0bc626b1
+```
+
+### Alpine system libraries
+
+* libatomic_ops-7.6.10-r2
+* zlib-1.2.11-r3
+* pcre-8.44-r0
+* libxml2-2.9.10-r5
+* libxslt-1.1.34-r0
+* libgd-2.3.0-r1
+* libcurl-7.69.1-r1
+* lua5.2-5.2.4-r7
+* yajl-2.1.0-r1
+
+### Additional compiled libraries & binaries
 
 |Library / Project|Version|
 |--|--|
-|ssdeep|Last version from GitHub at build date|
-|ModSecurity-nginx connector|Last version from GitHub at build date|
-|ModSecurity|3.0.4|
-|NAXSI|1.1a|
-|Leev's http_geoip2_module|3.3|
-|LibreSSL|3.2.1|
-|NGINX|1.19.2|
-|webproc|0.4.0|
+|[ssdeep](https://github.com/ssdeep-project/ssdeep)|Last version from GitHub at build date|
+|[ModSecurity-nginx connector](https://github.com/SpiderLabs/ModSecurity-nginx)|Last version from GitHub at build date|
+|[ModSecurity](https://github.com/SpiderLabs/ModSecurity)|3.0.4|
+|[NAXSI](https://github.com/nbs-system/naxsi)*|1.1a|
+|[LibreSSL](https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/)|3.2.1|
+|[NGINX](http://nginx.org/download/)|1.19.2|
+|[webproc](https://github.com/jpillora/webproc)|0.4.0|
 
-TODO add links
+\* [NGINX 3rd Party Modules](https://www.nginx.com/resources/wiki/modules/).
 
-From [NGINX 3rd Party Modules](https://www.nginx.com/resources/wiki/modules/):
+#### Compilation resources
 
-* [https://github.com/leev/ngx_http_geoip2_module](https://github.com/leev/ngx_http_geoip2_module)
-* NAXSI
+<https://github.com/SpiderLabs/ModSecurity/wiki/Compilation-recipes-for-v3.x>
 
 ## Deployment
 
@@ -61,7 +87,7 @@ TODO to come
 
 1. Get the image:
 
-    ```cmd
+    ```shell
     docker pull swafproject/swaf-docker
     ```
 
@@ -69,13 +95,13 @@ TODO to come
 
 * Get the code:
 
-    ```cmd
+    ```shell
     git clone -b master --depth=1 https://github.com/swaf-project/swaf-docker
     ```
 
 * Build your own docker image:
 
-    ```cmd
+    ```shell
     docker build -t swaf .
     ```
 
