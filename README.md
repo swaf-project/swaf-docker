@@ -35,11 +35,6 @@ Features: AsynchDNS HTTP2 HTTPS-proxy IPv6 Largefile libz NTLM NTLM_WB SSL TLS-S
 git version 2.26.2
 ```
 
-```shell
-# redis-server -v
-Redis server v=5.0.9 sha=869dcbdc:0 malloc=libc bits=64 build=5e0aa57c0bc626b1
-```
-
 ### Alpine system libraries
 
 * libatomic_ops-7.6.10-r2
