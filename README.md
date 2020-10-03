@@ -2,7 +2,7 @@
 
 **sWAF** is a **simple Web Application Firewall** docker image, pre-configured to be easily used with your web services architecture. It runs [NGINX](https://www.nginx.com/) as a dedicated reverse proxy with [ModSecurity v3](https://www.modsecurity.org/) and [NAXSI](https://github.com/nbs-system/naxsi) for the security layers, all over an [Alpine Linux](https://www.alpinelinux.org/) image. The goal is to offer a simple WAF docker image acting as a security device ready to be deploy wherever into your network infrastructure:
 
-**[Web Client]** --`hxxp(s)://my.owncloud.com`--> **[sWAF (Listeners>TLS>Security>rProxying)]** --`hxxp(s)://my.owncloud.local`--> **[mywebservice1]**
+**[Client]** --`hxxp(s)://my.cloud.com`--> **[sWAF (Security+rProxying)]** --`hxxp://a.b.c.d`--> **[myws1]**
 
 [![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-docker?sort=semver&logo=docker)](https://hub.docker.com/repository/docker/swafproject/swaf-docker)
 [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-docker?sort=semver&logo=docker)](https://hub.docker.com/repository/docker/swafproject/swaf-docker)
