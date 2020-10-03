@@ -1,0 +1,15 @@
+os:
+- linux
+- windows
+language: minimal
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: build & test docker image
+      script:
+      - docker build -t swaf .
+      - docker images
+      - docker run --name swaf -d --restart always swaf
