@@ -13,3 +13,4 @@ jobs:
       - docker build -t swaf .
       - docker images
       - docker run --name swaf -d --restart always swaf
+      - docker ps
