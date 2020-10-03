@@ -14,7 +14,7 @@
 * **NGINX** with **LibreSSL**, **ModSecurity** & **NAXSI**
 * ACME.sh for **Let’s Encrypt** support (_Not Yet Implemented_)
 * **logrotate** (_Not Yet Implemented_)
-* **TLS 1.3** support (_To Be Checked_)
+* **TLS 1.3** support
 
 ## Build details
 
