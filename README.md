@@ -137,7 +137,7 @@ This Docker image includes bundled packages and below are their associated licen
     [https://alpinelinux.org/](https://alpinelinux.org/)
     [https://hub.docker.com/_/alpine/](https://hub.docker.com/_/alpine/)
 
-TODO
+* Libraries and tools are referenced in the [Build details](#build-details) section.
 
 ## Credits
 
