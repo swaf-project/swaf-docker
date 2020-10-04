@@ -15,17 +15,23 @@
 # TODO Alpine version
 
 
-# Bootstrap script start time
-BOOTSTRAP_STARTTIME=$(date +%s.%N)
-
-
 # Set build args
-export BUILD_START=
+## Bootstrap script start time
+BOOTSTRAP_STARTTIME=$(date +%s.%N)
 ## Used packages versions
 export MODSECURITY_VER="3.0.4"
 export NAXSI_VER="1.1a"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
+## LibreSSL paths
+export LIBRESSL_PREFIX_PATH="/"
+export LIBRESSL_EPREFIX_PATH="/usr"
+export LIBRESSL_CONFIG_PATH="/etc"
+export LIBRESSL_RUN_PATH="/run"
+export LIBRESSL_INCLUDE_PATH="${LIBRESSL_EPREFIX_PATH}/include"
+export LIBRESSL_DATAROOT_PATH="${LIBRESSL_EPREFIX_PATH}/share"
+## LibreSSL binary name
+export LIBRESSL_BIN_NAME="libressl"
 ## NGINX paths
 export NGINX_PREFIX_PATH="/var/lib/nginx"
 export NGINX_SBIN_PATH="/usr/sbin"
@@ -127,7 +133,18 @@ cd /tmp
 curl -SLO https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${LIBRESSL_VER}.tar.gz
 tar xvfz libressl-${LIBRESSL_VER}.tar.gz
 cd /tmp/libressl-${LIBRESSL_VER}
-./configure
+./configure \
+    `### Build options (most default options are based on prefix and exec-prefix):` \
+    --prefix=${LIBRESSL_PREFIX_PATH} \
+    --exec-prefix=${LIBRESSL_EPREFIX_PATH} \
+    `### Other forced paths:` \
+    --sysconfdir=${LIBRESSL_CONFIG_PATH} \
+    --runstatedir=${LIBRESSL_RUN_PATH} \
+    --includedir=${LIBRESSL_INCLUDE_PATH} \
+    `### Default doc root path (declined options based on datarootdir):` \
+    --datarootdir=${LIBRESSL_DATAROOT_PATH} \
+    `### Program name sed substitution:` \
+    --program-transform-name="s,openssl,${LIBRESSL_BIN_NAME},"
 make
 make install
 make clean
@@ -301,7 +318,7 @@ rm -rf /tmp/*
 
 
 # Outro
-echo "\n\n"
+echo -e "\n\n"
 echo "------------========================================------------"
 echo "sWAF Bootstrap Script Report"
 echo
