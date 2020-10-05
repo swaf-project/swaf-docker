@@ -323,12 +323,13 @@ echo "------------========================================------------"
 echo "sWAF Bootstrap Script Report"
 echo
 echo "--> Build done."
-BOOTSTRAP_DURATION=$(echo "$(date +%s.%N) - $BOOTSTRAP_STARTTIME" | bc)
-BOOTSTRAP_EXEC_TIME=`printf "%.2f seconds" $BOOTSTRAP_DURATION`
-echo "--> Script Execution Time: $BOOTSTRAP_EXEC_TIME"
+echo "--> Script Execution Time: $(date -d@$(echo "$(date +%s.%N) - ${BOOTSTRAP_STARTTIME}" | bc) -u +%Hh\ %Mm\ %Ss)"
 echo "--> LibreSSL details:"
+echo "> # libressl version -a"
 libressl version -a
+echo
 echo "--> NGINX details:"
+echo "> # nginx -V"
 nginx -V
 echo "------------========================================------------"
-echo
+echo -e "\n\n"
