@@ -17,12 +17,13 @@
 
 # Set build args
 ## Bootstrap script start time
-BOOTSTRAP_STARTTIME=$(date +%s.%N)
+export BOOTSTRAP_STARTTIME=$(date +%s.%N)
 ## Used packages versions
 export MODSECURITY_VER="3.0.4"
 export NAXSI_VER="1.1a"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
+export CONFIG_VER="master"
 ## LibreSSL paths
 export LIBRESSL_PREFIX_PATH="/"
 export LIBRESSL_EPREFIX_PATH="/usr"
@@ -45,9 +46,11 @@ export NGINX_PROXY_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/proxy"
 export NGINX_FASTCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/fastcgi"
 export NGINX_UWSGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/uwsgi"
 export NGINX_SCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/scgi"
-# NGINX user/group
+## NGINX user/group
 export NGINX_USER=nginx
 export NGINX_GROUP=nginx
+## Configfiles root URL
+export CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${CONFIG_VER}/rootfs"
 
 
 # Install system packages
@@ -180,6 +183,8 @@ mkdir -p ${NGINX_SBIN_PATH}
 mkdir -p ${NGINX_MODULES_PATH}
 mkdir -p ${NGINX_CONFIG_PATH}
 mkdir -p ${NGINX_CONFIG_PATH}/conf.d
+mkdir -p ${NGINX_CONFIG_PATH}/modsec.d
+mkdir -p ${NGINX_CONFIG_PATH}/naxsi.d
 mkdir -p ${NGINX_RUN_PATH}
 mkdir -p ${NGINX_LOCK_PATH}
 mkdir -p ${NGINX_LOG_PATH}
@@ -301,9 +306,24 @@ make install
 make clean
 
 
-# Init config files
+# Initialize config files
+cd /tmp
 
-# TODO config files
+## Download configuration files
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_CONFIG_PATH}/nginx.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONFIG_PATH}/conf.d/main.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONFIG_PATH}/conf.d/events.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONFIG_PATH}/conf.d/http.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONFIG_PATH}/conf.d/stream.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/http.srv.service1.conf.example
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/stream.srv.service2.conf.example
+
+## Create 'default' files
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_CONFIG_PATH}/nginx.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONFIG_PATH}/conf.d/main.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONFIG_PATH}/conf.d/events.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONFIG_PATH}/conf.d/http.conf
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONFIG_PATH}/conf.d/stream.conf
 
 
 # Clean

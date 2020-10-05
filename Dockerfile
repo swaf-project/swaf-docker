@@ -16,6 +16,7 @@ LABEL maintainer="styx0x6 <https://github.com/styx0x6>"
 
 
 # Bootstrap sWAF
+## --> Copy scripts
 COPY rootfs/usr/local/bin/bootstrap.sh /usr/local/bin/bootstrap.sh
 COPY rootfs/usr/local/bin/start.sh /usr/local/bin/start.sh
 ## --> One RUN to build and avoid a multi-layered and oversized image

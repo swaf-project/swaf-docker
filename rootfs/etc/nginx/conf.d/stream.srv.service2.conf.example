@@ -1,0 +1,8 @@
+# sWAF/NGINX
+# 'stream' context directives
+# Configuration specific to TCP/UDP virtual servers and upstreams
+
+
+server {
+    # Configuration of TCP virtual server 2
+}

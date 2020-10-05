@@ -1,0 +1,18 @@
+# sWAF/NGINX
+# 'http' context directives
+# Configuration specific to HTTP virtual servers and upstreams
+
+
+server {
+    # Configuration of HTTP virtual server 1       
+    location /one {
+        # Configuration for processing URIs starting with '/one'
+    }
+    location /two {
+        # Configuration for processing URIs starting with '/two'
+    }
+} 
+
+server {
+    # Configuration of HTTP virtual server 2
+}
