@@ -10,7 +10,6 @@
 # page for all the official versions of the EUPL-1.2:
 # https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 
-echo "Starting..."
-# TODO to configure as a daemon
-/usr/sbin/nginx -c /etc/nginx/nginx.conf
+echo "Starting sWAF..."
+/usr/sbin/nginx
 /bin/sh
