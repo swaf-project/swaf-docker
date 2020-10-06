@@ -263,12 +263,11 @@ cd /tmp/nginx-${NGINX_VER}
     --with-http_degradation_module \
     --with-http_slice_module \
     --with-http_stub_status_module \
-    `### Dynamic modules included in the build:` \
+    --with-http_xslt_module \
+    --with-http_image_filter_module \
     `# TODO GeoIP2 used instead: https://docs.nginx.com/nginx/admin-guide/dynamic-modules/geoip/` \
-    `#--with-http_geoip_module=dynamic` \
-    --with-http_xslt_module=dynamic \
-    --with-http_image_filter_module=dynamic \
-    --with-stream=dynamic \
+    `#--with-http_geoip_module` \
+    --with-stream \
         `#stream_limit_conn_module` \
         `#stream_access_module` \
         `#stream_geo_module` \
@@ -282,7 +281,8 @@ cd /tmp/nginx-${NGINX_VER}
         --with-stream_realip_module \
         --with-stream_ssl_preread_module \
         `# TODO geoip? use geoip2` \
-        `#--with-stream_geoip_module=dynamic` \
+        `#--with-stream_geoip_module` \
+    `### Dynamic modules included in the build:` \
     --add-dynamic-module=/tmp/ModSecurity-nginx \
     --add-dynamic-module=/tmp/naxsi-${NAXSI_VER}/naxsi_src \
     `# TODO GEOIP2` \
