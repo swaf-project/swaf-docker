@@ -319,11 +319,11 @@ curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/stream.srv.service2.conf.example
 
 ## Create 'default' files
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_CONFIG_PATH}/nginx.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONFIG_PATH}/conf.d/main.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONFIG_PATH}/conf.d/events.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONFIG_PATH}/conf.d/http.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONFIG_PATH}/conf.d/stream.conf
+cp ${NGINX_CONFIG_PATH}/nginx.conf ${NGINX_CONFIG_PATH}/nginx.conf.default
+cp ${NGINX_CONFIG_PATH}/conf.d/main.conf ${NGINX_CONFIG_PATH}/conf.d/main.conf.default
+cp ${NGINX_CONFIG_PATH}/conf.d/events.conf ${NGINX_CONFIG_PATH}/conf.d/events.conf.default
+cp ${NGINX_CONFIG_PATH}/conf.d/http.conf ${NGINX_CONFIG_PATH}/conf.d/http.conf.default
+cp ${NGINX_CONFIG_PATH}/conf.d/stream.conf ${NGINX_CONFIG_PATH}/conf.d/stream.conf.default
 
 
 # Clean
@@ -344,6 +344,7 @@ echo "sWAF Bootstrap Script Report"
 echo
 echo "--> Build done."
 echo "--> Script Execution Time: $(date -d@$(echo "$(date +%s.%N) - ${BOOTSTRAP_STARTTIME}" | bc) -u +%Hh\ %Mm\ %Ss)"
+echo
 echo "--> LibreSSL details:"
 echo "> # libressl version -a"
 libressl version -a
