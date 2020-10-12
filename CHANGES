@@ -1,8 +1,10 @@
 # Changelog
 
-## Version 0.1.0 (YYYY-MM-DD)
+## Version x.y.z (YYYY-MM-DD)
 
 First release!
 
 * Dockerfile based on Alpine Linux.
+* Bootstrap script
+    * TODO
 * TODO
