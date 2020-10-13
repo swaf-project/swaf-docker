@@ -1,24 +1,46 @@
-# sWAF - A simple WAF docker image
+```text
+          ___          ___    _________
+       ___\  \        /   \  |   _____/
+     (   __\  \  /\  /  _  \ |  |___
+      \  \  \  \/  \/  / \  \|   __/   >>>  A simple Web Application Firewall docker image.
+    ___)  \  \   /\   /---\  \  |
+    \_____/   \_/  \_/     \____|
+```
 
-**sWAF** is a **simple Web Application Firewall** docker image, pre-configured to be easily used with your web services architecture. It runs [NGINX](https://www.nginx.com/) as a dedicated reverse proxy with [ModSecurity v3](https://www.modsecurity.org/) and [NAXSI](https://github.com/nbs-system/naxsi) for the security layers, all over an [Alpine Linux](https://www.alpinelinux.org/) image. The goal is to offer a simple WAF docker image acting as a security device ready to be deploy wherever into your network infrastructure:
-
-**[Client]** --`hxxp(s)://my.cloud.com`--> **[sWAF (Security+rProxying)]** --`hxxp://a.b.c.d`--> **[myws1]**
+**sWAF** is a **simple Web Application Firewall** [docker image](https://hub.docker.com/r/swafproject/swaf), pre-configured to be easily used with your web services architecture. It runs [NGINX](https://www.nginx.com/) as dedicated reverse proxy with [ModSecurity v3](https://www.modsecurity.org/) and [NAXSI](https://github.com/nbs-system/naxsi) engines using [OWASP® ModSecurity Core Rule Set (CRS)](https://coreruleset.org/).
 
 [![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-docker?sort=semver&logo=docker)](https://hub.docker.com/repository/docker/swafproject/swaf-docker)
 [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-docker?sort=semver&logo=docker)](https://hub.docker.com/repository/docker/swafproject/swaf-docker)
 [![Build Status](https://img.shields.io/travis/swaf-project/swaf-docker/master.svg?logo=travis&label=master)](https://travis-ci.org/swaf-project/swaf-docker)
 [![License](https://img.shields.io/github/license/swaf-project/swaf-docker?color=blue)](https://raw.githubusercontent.com/swaf-project/swaf-docker/master/LICENSE)
 
+## About
+
+The goal is to offer a simple WAF docker image acting as a security device ready to be deploy wherever into your network infrastructure:
+
+**[Client]** --`hxxp(s)://drive.cloud.me`--> **[sWAF (Security+rProxying)]** --`hxxp://a.b.c.d:6666`--> **[mywebservice1]**
+
+### Versioning
+
+* `master` branch is continuously built as [swafproject/swaf-dev](https://hub.docker.com/r/swafproject/swaf-dev) on Docker Hub.
+* Versionized releases are built as [swafproject/swaf](https://hub.docker.com/r/swafproject/swaf) on Docker Hub.
+
+**Edit 13-Oct-2020** - First _functional_ release to come by end of October.
+
 ## Features
 
-* **NGINX** with **LibreSSL**, **ModSecurity** & **NAXSI**
-* ACME.sh for **Let’s Encrypt** support (_Not Yet Implemented_)
-* **logrotate** (_Not Yet Implemented_)
+* **NGINX** with:
+  + **LibreSSL**
+  + **ModSecurity**
+  + **NAXSI**
+* **OWASP® ModSecurity Core Rule Set**
+* **acme.sh** for free SSL/TLS certificates support (_Not Yet Implemented_)
 * **TLS 1.3** support
+* **logrotate** (_Not Yet Implemented_)
 
 ## Build details
 
-Build on **Alpine Linux 3.12.0**.
+Build on **[Alpine Linux](https://www.alpinelinux.org/) 3.12.0**.
 
 ### Alpine system binaries
 
@@ -54,6 +76,7 @@ git version 2.26.2
 |[ssdeep](https://github.com/ssdeep-project/ssdeep)|Last version from GitHub at build date|
 |[ModSecurity-nginx connector](https://github.com/SpiderLabs/ModSecurity-nginx)|Last version from GitHub at build date|
 |[ModSecurity](https://github.com/SpiderLabs/ModSecurity)|3.0.4|
+|[Core Rule Set](https://github.com/coreruleset/coreruleset)|3.3.0|
 |[NAXSI](https://github.com/nbs-system/naxsi)*|1.1a|
 |[LibreSSL](https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/)|3.2.1|
 |[NGINX](http://nginx.org/download/)|1.19.2|
@@ -64,24 +87,12 @@ git version 2.26.2
 
 <https://github.com/SpiderLabs/ModSecurity/wiki/Compilation-recipes-for-v3.x>
 
-## Deployment
-
-This image is useful for cloud/home-hosted infrastructure.
-
-### Generic deployment
-
-TODO to come
-
-### Synology deployment
-
-TODO to come
-
 ## Run
 
-1. Get the image:
+1. Get the docker image:
 
     ```shell
-    docker pull swafproject/swaf-docker
+    docker pull swafproject/swaf
     ```
 
 ## Build
@@ -98,27 +109,29 @@ TODO to come
     docker build -t swaf .
     ```
 
-## Configuration files
+## Deploy & Configure
 
-TODO to come
+TODO Quick doc.
+
+See [Wiki](https://github.com/swaf-project/swaf-docker/wiki) for details.
 
 ## Links
 
 * Homepage: [swaf-project.github.io](https://swaf-project.github.io/)
-* Docker Hub: [swafproject/swaf-docker](https://hub.docker.com/swafproject/swaf-docker)
-* Get docker image: `docker pull swafproject/swaf-docker`
+* Documentation: [Wiki](https://github.com/swaf-project/swaf-docker/wiki)
+* Docker Hub: [swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)
 * Git repository: [git://github.com/swaf-project/swaf-docker.git](git://github.com/swaf-project/swaf-docker.git)
 * Issues tracker: [https://github.com/swaf-project/swaf-docker/issues](https://github.com/swaf-project/swaf-docker/issues)
 
 ## Changelog
 
-All details are here: [[CHANGELOG](CHANGELOG.md)]
+All details are here: [[CHANGES](CHANGES)]
 
 ## Contributing
 
 Feel free to submit *issues* and enhancement via *pull requests*!
 
-[[Bugs & Support](https://github.com/styx0x6/swaf/issues)]  
+[[Bugs & Support](https://github.com/swaf-project/swaf-docker/issues)]  
 [[How to contribute to a project on Github](https://gist.github.com/MarcDiethelm/7303312)] by Marc Diethelm.
 
 ## Third-Party Tools
