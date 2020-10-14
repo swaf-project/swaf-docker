@@ -1,0 +1,130 @@
+name: Build & Publish on Docker Hub
+# Based on https://github.com/docker/build-push-action
+
+on:
+  push:
+    # Publish master head branch into dev repository
+    branches:
+      - master
+    # Publish v*.*.* tagged image into release repository
+    tags:
+      - v*.*.*
+
+env:
+  DH_ORGA: swafproject
+  DH_REPO_DEV: swaf-dev
+  DH_REPO_REL: swaf
+
+jobs:
+  # Testing job
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          docker build . --file Dockerfile --tag swaf-test
+        # TODO Add run test
+
+  # Push image to Docker Hub
+  build_pub:
+    # Ensure that test job passes before pushing image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Repo metadata for labels
+        id: repo
+        uses: actions/github-script@v3
+        with:
+          script: |
+            const repo = await github.repos.get(context.repo)
+            return repo.data
+
+      - name: Prepare repository and tags
+        id: prep
+        run: |
+          DOCKER_IMAGE=${DH_ORGA}/${DH_REPO_DEV}
+          VERSION=noop
+          PLATFORMS=linux/amd64
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            DOCKER_IMAGE=${DH_ORGA}/${DH_REPO_REL}
+            PLATFORMS=linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+            VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed -r 's#v##g')
+          else
+            DOCKER_IMAGE=${DH_ORGA}/${DH_REPO_DEV}
+            PLATFORMS=linux/amd64,linux/arm/v7,linux/arm64/v8
+            VERSION=dev-$(date -u +'%Y%m%d-%H%M%S')
+          fi
+          TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:latest"
+          if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            MINOR=${VERSION%.*}
+            MAJOR=${MINOR%.*}
+            TAGS="$TAGS,${DOCKER_IMAGE}:${MINOR},${DOCKER_IMAGE}:${MAJOR}"
+          fi
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=tags::${TAGS}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      #- name: Login to GitHub Container Registry
+        #uses: docker/login-action@v1
+        #with:
+          #registry: ghcr.io
+          #username: ${{ github.repository_owner }}
+          #password: ${{ secrets.CR_PAT }}
+
+      - name: Build & Push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ steps.prep.outputs.platforms }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          push: true
+          tags: ${{ steps.prep.outputs.tags }}
+          labels: |
+            org.opencontainers.image.title=${{ fromJson(steps.repo.outputs.result).name }}
+            org.opencontainers.image.description=${{ fromJson(steps.repo.outputs.result).description }}
+            org.opencontainers.image.url=${{ fromJson(steps.repo.outputs.result).html_url }}
+            org.opencontainers.image.source=${{ fromJson(steps.repo.outputs.result).clone_url }}
+            org.opencontainers.image.version=${{ steps.prep.outputs.version }}
+            org.opencontainers.image.created=${{ steps.prep.outputs.created }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=${{ fromJson(steps.repo.outputs.result).license.spdx_id }}
+
+      #- name: Push to GitHub Packages
+      #  uses: docker/build-push-action@v1
+      #  with:
+      #    username: ${{ github.actor }}
+      #    password: ${{ secrets.GITHUB_TOKEN }}
+      #    registry: docker.pkg.github.com
+      #    repository: my-org/my-repo/my-image
+      #ghcr.io/user/app:latest
+      #ghcr.io/user/app:1.0.0
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

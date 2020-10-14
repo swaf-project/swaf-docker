@@ -1,0 +1,18 @@
+name: Test Pull Request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  # Testing job
+  test_pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          docker build . --file Dockerfile --tag swaf-test-pr
+        # TODO Add run test
