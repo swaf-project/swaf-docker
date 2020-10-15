@@ -12,7 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Run tests
         run: |
-          docker build . --file Dockerfile --tag swaf-test-pr
+          docker build . --file ./Dockerfile --tag swaf-test-pr
         # TODO Add run test
