@@ -18,24 +18,24 @@
 
 The goal is to offer a simple WAF docker image acting as a security device ready to be deploy wherever into your network infrastructure:
 
-**[Client]** --`hxxp(s)://drive.cloud.me`--> **[sWAF (Security+rProxying)]** --`hxxp://a.b.c.d:6666`--> **[mywebservice1]**
+**[Client]** --`hxxp(s)://drive.cloud.me`--> **[sWAF > Security+rProxying]** --`hxxp://a.b.c.d:6666`--> **[mywebservice1]**
 
 ### Versioning
 
 * `master` branch is continuously built as [swafproject/swaf-dev](https://hub.docker.com/r/swafproject/swaf-dev) on Docker Hub.
 * Versionized releases are built as [swafproject/swaf](https://hub.docker.com/r/swafproject/swaf) on Docker Hub.
 
-**Edit 13-Oct-2020** - First _functional_ release to come by end of October.
+**_Edit 13-Oct-2020_** - First _functional_ release to come by end of October.
 
 ## Features
 
 * **NGINX** with:
   + **LibreSSL**
+    - **TLS 1.3** support
   + **ModSecurity**
+    - **OWASP® ModSecurity Core Rule Set**
   + **NAXSI**
-* **OWASP® ModSecurity Core Rule Set**
 * **acme.sh** for free SSL/TLS certificates support (_Not Yet Implemented_)
-* **TLS 1.3** support
 * **logrotate** (_Not Yet Implemented_)
 
 ## Build details
@@ -71,6 +71,8 @@ git version 2.26.2
 
 ### Additional compiled libraries & binaries
 
+TODO to review comparing to the bootstrap script
+
 |Library / Project|Version|
 |--|--|
 |[ssdeep](https://github.com/ssdeep-project/ssdeep)|Last version from GitHub at build date|
@@ -94,6 +96,8 @@ git version 2.26.2
     ```shell
     docker pull swafproject/swaf
     ```
+
+TODO to complete
 
 ## Build
 
@@ -120,7 +124,7 @@ See [Wiki](https://github.com/swaf-project/swaf-docker/wiki) for details.
 * Homepage: [swaf-project.github.io](https://swaf-project.github.io/)
 * Documentation: [Wiki](https://github.com/swaf-project/swaf-docker/wiki)
 * Docker Hub: [swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)
-* Git repository: [git://github.com/swaf-project/swaf-docker.git](git://github.com/swaf-project/swaf-docker.git)
+* Git repository: [https://github.com/swaf-project/swaf-docker.git](https://github.com/swaf-project/swaf-docker.git)
 * Issues tracker: [https://github.com/swaf-project/swaf-docker/issues](https://github.com/swaf-project/swaf-docker/issues)
 
 ## Changelog
@@ -142,7 +146,7 @@ This Docker image includes bundled packages and below are their associated licen
 
     Copyright (C) 2020, Alpine Linux Development Team. All rights reserved.
 
-    [https://alpinelinux.org/](https://alpinelinux.org/)
+    [https://alpinelinux.org/](https://alpinelinux.org/)  
     [https://hub.docker.com/_/alpine/](https://hub.docker.com/_/alpine/)
 
 * Libraries and tools are referenced in the [Build details](#build-details) section.
