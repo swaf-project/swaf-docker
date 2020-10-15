@@ -13,17 +13,19 @@
 
 # Pre-check
 # TODO Alpine version
+#cat /etc/os-release | grep VERSION_ID
 
 
 # Set build args
 ## Bootstrap script start time
 export BOOTSTRAP_STARTTIME=$(date +%s.%N)
 ## Used packages versions
+export CRS_VER="3.3.0"
 export MODSECURITY_VER="3.0.4"
 export NAXSI_VER="1.1a"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
-export CONFIG_VER="master"
+export SWAF_VER="master"
 ## LibreSSL paths
 export LIBRESSL_PREFIX_PATH="/"
 export LIBRESSL_EPREFIX_PATH="/usr"
@@ -50,7 +52,7 @@ export NGINX_SCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/scgi"
 export NGINX_USER=nginx
 export NGINX_GROUP=nginx
 ## Configfiles root URL
-export CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${CONFIG_VER}/rootfs"
+export CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${SWAF_VER}/rootfs"
 
 
 # Install system packages
@@ -177,13 +179,13 @@ tar xvfz nginx-${NGINX_VER}.tar.gz
 ## --> Create NGINX running user & group
 adduser -D -H -h ${NGINX_PREFIX_PATH} -s /sbin/nologin ${NGINX_USER} ${NGINX_GROUP}
 
-## --> Create NGINX folders before building
+## --> Create NGINX and modules folders before building
 mkdir -p ${NGINX_PREFIX_PATH}
 mkdir -p ${NGINX_SBIN_PATH}
 mkdir -p ${NGINX_MODULES_PATH}
 mkdir -p ${NGINX_CONFIG_PATH}
 mkdir -p ${NGINX_CONFIG_PATH}/conf.d
-mkdir -p ${NGINX_CONFIG_PATH}/modsec.d
+mkdir -p ${NGINX_CONFIG_PATH}/modsec.d/owasp-modsecurity-crs
 mkdir -p ${NGINX_CONFIG_PATH}/naxsi.d
 mkdir -p ${NGINX_RUN_PATH}
 mkdir -p ${NGINX_LOCK_PATH}
@@ -306,10 +308,10 @@ make install
 make clean
 
 
-# Initialize config files
+# Prepare configuration files
 cd /tmp
 
-## Download configuration files
+## Deploy NGINX configuration files
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_CONFIG_PATH}/nginx.conf
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONFIG_PATH}/conf.d/main.conf
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONFIG_PATH}/conf.d/events.conf
@@ -318,12 +320,41 @@ curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONFIG_
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/http.srv.service1.conf.example
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/stream.srv.service2.conf.example
 
-## Create 'default' files
+## Create NGINX 'default' files
 cp ${NGINX_CONFIG_PATH}/nginx.conf ${NGINX_CONFIG_PATH}/nginx.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/main.conf ${NGINX_CONFIG_PATH}/conf.d/main.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/events.conf ${NGINX_CONFIG_PATH}/conf.d/events.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/http.conf ${NGINX_CONFIG_PATH}/conf.d/http.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/stream.conf ${NGINX_CONFIG_PATH}/conf.d/stream.conf.default
+
+## Deploy OWASP Core Rule Set
+cd ${NGINX_CONFIG_PATH}/modsec.d/owasp-modsecurity-crs
+
+### Get CRS
+curl -SL https://github.com/coreruleset/coreruleset/archive/v${CRS_VER}.tar.gz -o coreruleset-${CRS_VER}.tar.gz
+tar xvfz coreruleset-${CRS_VER}.tar.gz
+### Copy CRS files
+cp coreruleset-${CRS_VER}/crs-setup.conf.example crs-setup.conf
+cp -R coreruleset-${CRS_VER}/rules rules
+cp coreruleset-${CRS_VER}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+cp coreruleset-${CRS_VER}/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf.example rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+cp -R coreruleset-${CRS_VER}/util util
+### Clean
+rm -f coreruleset-${CRS_VER}.tar.gz
+
+## Deploy ModSecurity configuration files
+cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
+cp /tmp/ModSecurity/unicode.mapping ${NGINX_CONFIG_PATH}/modsec.d/unicode.mapping
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_CONFIG_PATH}/modsec.d/modsec_includes.conf
+
+
+# Tuning
+# TODO Tune modsecurity.conf
+sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec.d/modsecurity.conf
+# TODO Tune crs-setup.conf
+# TODO Tune below files that will allow to add exceptions without updates overwriting them in the future.
+# TODO Tune rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+# TODO Tune rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
 
 
 # Clean
