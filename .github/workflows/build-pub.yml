@@ -14,23 +14,14 @@ env:
   DH_ORGA: swafproject
   DH_REPO_DEV: swaf-dev
   DH_REPO_REL: swaf
+  TITLE_DEV: sWAF-dev
+  TITLE_REL: sWAF
+  PLATFORMS_DEV: linux/amd64,linux/arm/v7,linux/arm64/v8
+  PLATFORMS_REL: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
 
 jobs:
-  # Testing job
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run tests
-        run: |
-          docker build . --file Dockerfile --tag swaf-test
-        # TODO Add run test
-
   # Push image to Docker Hub
   build_pub:
-    # Ensure that test job passes before pushing image
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,16 +39,19 @@ jobs:
         id: prep
         run: |
           DOCKER_IMAGE=${DH_ORGA}/${DH_REPO_DEV}
+          TITLE=${TITLE_REL}
+          PLATFORMS=${PLATFORMS_DEV}
           VERSION=noop
-          PLATFORMS=linux/amd64
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             DOCKER_IMAGE=${DH_ORGA}/${DH_REPO_REL}
-            PLATFORMS=linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+            TITLE=${TITLE_REL}
+            PLATFORMS=${PLATFORMS_REL}
             VERSION=$(echo ${GITHUB_REF#refs/tags/} | sed -r 's#v##g')
           else
             DOCKER_IMAGE=${DH_ORGA}/${DH_REPO_DEV}
-            PLATFORMS=linux/amd64,linux/arm/v7,linux/arm64/v8
-            VERSION=dev-$(date -u +'%Y%m%d-%H%M%S')
+            TITLE=${TITLE_DEV}
+            PLATFORMS=${PLATFORMS_DEV}
+            VERSION=dev-$(date -u +'%Y%m%dT%H%M%SZ')
           fi
           TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:latest"
           if [[ $VERSION =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
@@ -65,6 +59,8 @@ jobs:
             MAJOR=${MINOR%.*}
             TAGS="$TAGS,${DOCKER_IMAGE}:${MINOR},${DOCKER_IMAGE}:${MAJOR}"
           fi
+          echo ::set-output name=title::${TITLE}
+          echo ::set-output name=platforms::${PLATFORMS}
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
@@ -107,7 +103,7 @@ jobs:
           push: true
           tags: ${{ steps.prep.outputs.tags }}
           labels: |
-            org.opencontainers.image.title=${{ fromJson(steps.repo.outputs.result).name }}
+            org.opencontainers.image.title=${{ steps.prep.outputs.title }}
             org.opencontainers.image.description=${{ fromJson(steps.repo.outputs.result).description }}
             org.opencontainers.image.url=${{ fromJson(steps.repo.outputs.result).html_url }}
             org.opencontainers.image.source=${{ fromJson(steps.repo.outputs.result).clone_url }}
