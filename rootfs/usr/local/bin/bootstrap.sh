@@ -343,14 +343,23 @@ cp -R coreruleset-${CRS_VER}/util util
 rm -f coreruleset-${CRS_VER}.tar.gz
 
 ## Deploy ModSecurity configuration files
-cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
-cp /tmp/ModSecurity/unicode.mapping ${NGINX_CONFIG_PATH}/modsec.d/unicode.mapping
+
+### Configuration files path
+export CF_MODSECURITY=${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
+export CF_UNICODE_MAPPING=${NGINX_CONFIG_PATH}/modsec.d/unicode.mapping
+### Deploy default files
+cp /tmp/ModSecurity/modsecurity.conf-recommended ${CF_MODSECURITY}
+cp /tmp/ModSecurity/unicode.mapping ${CF_UNICODE_MAPPING}
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_CONFIG_PATH}/modsec.d/modsec_includes.conf
 
 
 # Tuning
+## modsecurity.conf
+sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
 # TODO Tune modsecurity.conf
-sed -i 's/SecRuleEngine DetectionOnly/SecRuleEngine On/' /etc/nginx/modsec.d/modsecurity.conf
+#sed -i 's|SecAuditLogType Serial|SecAuditLogType Concurrent|' ${CF_MODSECURITY}
+#sed -i 's|SecAuditLog /var/log/modsec_audit.log|SecAuditLog /usr/local/nginx/logs/modsec_audit.log|' ${CF_MODSECURITY}
+# TODO Check SecServerSignature to empty it by default
 # TODO Tune crs-setup.conf
 # TODO Tune below files that will allow to add exceptions without updates overwriting them in the future.
 # TODO Tune rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
