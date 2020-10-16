@@ -311,7 +311,8 @@ make clean
 # Prepare configuration files
 cd /tmp
 
-## Deploy NGINX configuration files
+## --> NGINX configuration files
+### Get sWAF's NGINX configuration files
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_CONFIG_PATH}/nginx.conf
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONFIG_PATH}/conf.d/main.conf
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONFIG_PATH}/conf.d/events.conf
@@ -319,21 +320,25 @@ curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONFIG_PA
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONFIG_PATH}/conf.d/stream.conf
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/http.srv.service1.conf.example
 curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/stream.srv.service2.conf.example
-
-## Create NGINX 'default' files
-cp ${NGINX_CONFIG_PATH}/nginx.conf ${NGINX_CONFIG_PATH}/nginx.conf.default
+### Create related 'default' files
 cp ${NGINX_CONFIG_PATH}/conf.d/main.conf ${NGINX_CONFIG_PATH}/conf.d/main.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/events.conf ${NGINX_CONFIG_PATH}/conf.d/events.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/http.conf ${NGINX_CONFIG_PATH}/conf.d/http.conf.default
 cp ${NGINX_CONFIG_PATH}/conf.d/stream.conf ${NGINX_CONFIG_PATH}/conf.d/stream.conf.default
 
-## Deploy OWASP Core Rule Set
-cd ${NGINX_CONFIG_PATH}/modsec.d/owasp-modsecurity-crs
+## --> ModSecurity configuration files
+### Copy ModSecurity 'default' files
+cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
+cp /tmp/ModSecurity/unicode.mapping ${NGINX_CONFIG_PATH}/modsec.d/unicode.mapping
+### Get sWAF's ModSecurity configuration files
+curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_CONFIG_PATH}/modsec.d/modsec_includes.conf
 
+## --> OWASP Core Rule Set
+cd ${NGINX_CONFIG_PATH}/modsec.d/owasp-modsecurity-crs
 ### Get CRS
 curl -SL https://github.com/coreruleset/coreruleset/archive/v${CRS_VER}.tar.gz -o coreruleset-${CRS_VER}.tar.gz
 tar xvfz coreruleset-${CRS_VER}.tar.gz
-### Copy CRS files
+### Copy files
 cp coreruleset-${CRS_VER}/crs-setup.conf.example crs-setup.conf
 cp -R coreruleset-${CRS_VER}/rules rules
 cp coreruleset-${CRS_VER}/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf.example rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
@@ -342,19 +347,14 @@ cp -R coreruleset-${CRS_VER}/util util
 ### Clean
 rm -f coreruleset-${CRS_VER}.tar.gz
 
-## Deploy ModSecurity configuration files
-
-### Configuration files path
-export CF_MODSECURITY=${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
-export CF_UNICODE_MAPPING=${NGINX_CONFIG_PATH}/modsec.d/unicode.mapping
-### Deploy default files
-cp /tmp/ModSecurity/modsecurity.conf-recommended ${CF_MODSECURITY}
-cp /tmp/ModSecurity/unicode.mapping ${CF_UNICODE_MAPPING}
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_CONFIG_PATH}/modsec.d/modsec_includes.conf
+## --> NAXSI configuration files
+# TODO
 
 
 # Tuning
-## modsecurity.conf
+export CF_MODSECURITY=${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
+
+## --> modsecurity.conf
 sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
 # TODO Tune modsecurity.conf
 #sed -i 's|SecAuditLogType Serial|SecAuditLogType Concurrent|' ${CF_MODSECURITY}
