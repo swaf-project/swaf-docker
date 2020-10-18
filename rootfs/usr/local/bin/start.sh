@@ -10,6 +10,16 @@
 # page for all the official versions of the EUPL-1.2:
 # https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 
-echo "Starting sWAF..."
+
+cat /etc/motd
+
+# Deploy /etc/nginx after potentially mounted volume
+if [[ $(cat /opt/swaf/SWAF_IS_SET) == 0 ]]; then
+    echo "+ Deploying sWAF configuration..."
+    tar xvpfz /opt/swaf/swafconfig_backup.tar.gz -C /etc/nginx
+    echo "1" > /opt/swaf/SWAF_IS_SET
+fi
+
+echo "+ Starting sWAF..."
 /usr/sbin/nginx
 /bin/sh

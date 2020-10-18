@@ -34,11 +34,15 @@ export LIBRESSL_INCLUDE_PATH="${LIBRESSL_EPREFIX_PATH}/include"
 export LIBRESSL_DATAROOT_PATH="${LIBRESSL_EPREFIX_PATH}/share"
 ## LibreSSL binary name
 export LIBRESSL_BIN_NAME="libressl"
-## NGINX paths
+## NGINX paths (including modules configfiles paths)
 export NGINX_PREFIX_PATH="/var/lib/nginx"
 export NGINX_SBIN_PATH="/usr/sbin"
 export NGINX_MODULES_PATH="/usr/lib/nginx/modules"
-export NGINX_CONFIG_PATH="/etc/nginx"
+export NGINX_ROOT_CONFIG_PATH="/etc/nginx"
+export NGINX_CONF_D_CONFIG_PATH="${NGINX_ROOT_CONFIG_PATH}/conf.d"
+export NGINX_MODSEC_D_CONFIG_PATH="${NGINX_ROOT_CONFIG_PATH}}/modsec.d"
+export NGINX_CRS_CONFIG_PATH="${NGINX_MODSEC_D_CONFIG_PATH}}/owasp-modsecurity-crs"
+export NGINX_NAXSI_D_CONFIG_PATH="${NGINX_ROOT_CONFIG_PATH}/naxsi.d"
 export NGINX_RUN_PATH="/run/nginx"
 export NGINX_LOCK_PATH="/run/nginx"
 export NGINX_LOG_PATH="/var/log/nginx"
@@ -47,11 +51,33 @@ export NGINX_PROXY_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/proxy"
 export NGINX_FASTCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/fastcgi"
 export NGINX_UWSGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/uwsgi"
 export NGINX_SCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/scgi"
+### Create NGINX and modules folders
+mkdir -p ${NGINX_PREFIX_PATH}
+mkdir -p ${NGINX_SBIN_PATH}
+mkdir -p ${NGINX_MODULES_PATH}
+mkdir -p ${NGINX_ROOT_CONFIG_PATH}
+mkdir -p ${NGINX_CONF_D_CONFIG_PATH}
+mkdir -p ${NGINX_MODSEC_D_CONFIG_PATH}
+mkdir -p ${NGINX_CRS_CONFIG_PATH}
+mkdir -p ${NGINX_NAXSI_D_CONFIG_PATH}
+mkdir -p ${NGINX_RUN_PATH}
+mkdir -p ${NGINX_LOCK_PATH}
+mkdir -p ${NGINX_LOG_PATH}
+mkdir -p ${NGINX_CLIENT_BODY_TEMP_PATH}
+mkdir -p ${NGINX_PROXY_TEMP_PATH}
+mkdir -p ${NGINX_FASTCGI_TEMP_PATH}
+mkdir -p ${NGINX_UWSGI_TEMP_PATH}
+mkdir -p ${NGINX_SCGI_TEMP_PATH}
 ## NGINX user/group
 export NGINX_USER=nginx
 export NGINX_GROUP=nginx
-## Configfiles root URL
-export CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${SWAF_VER}/rootfs"
+## sWAF configfiles
+export SWAF_CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${SWAF_VER}/rootfs"
+export SWAF_CONFIGFILES_PATH="/opt/swaf"
+export SWAF_CONFIGFILES_BACKUP_FILE="${SWAF_CONFIGFILES_PATH}/swafconfig_backup.tar.gz"
+export SWAF_IS_SET_FILE="${SWAF_CONFIGFILES_PATH}/SWAF_IS_SET"
+### Create sWAF folders
+mkdir -p ${SWAF_CONFIGFILES_PATH}
 
 
 # Check if this script is run on the proper Alpine version
@@ -185,23 +211,6 @@ tar xvfz nginx-${NGINX_VER}.tar.gz
 ## --> Create NGINX running user & group
 adduser -D -H -h ${NGINX_PREFIX_PATH} -s /sbin/nologin ${NGINX_USER} ${NGINX_GROUP}
 
-## --> Create NGINX and modules folders before building
-mkdir -p ${NGINX_PREFIX_PATH}
-mkdir -p ${NGINX_SBIN_PATH}
-mkdir -p ${NGINX_MODULES_PATH}
-mkdir -p ${NGINX_CONFIG_PATH}
-mkdir -p ${NGINX_CONFIG_PATH}/conf.d
-mkdir -p ${NGINX_CONFIG_PATH}/modsec.d/owasp-modsecurity-crs
-mkdir -p ${NGINX_CONFIG_PATH}/naxsi.d
-mkdir -p ${NGINX_RUN_PATH}
-mkdir -p ${NGINX_LOCK_PATH}
-mkdir -p ${NGINX_LOG_PATH}
-mkdir -p ${NGINX_CLIENT_BODY_TEMP_PATH}
-mkdir -p ${NGINX_PROXY_TEMP_PATH}
-mkdir -p ${NGINX_FASTCGI_TEMP_PATH}
-mkdir -p ${NGINX_UWSGI_TEMP_PATH}
-mkdir -p ${NGINX_SCGI_TEMP_PATH}
-
 ## --> Build NGINX
 cd /tmp/nginx-${NGINX_VER}
 ./configure \
@@ -209,7 +218,7 @@ cd /tmp/nginx-${NGINX_VER}
     --prefix=${NGINX_PREFIX_PATH} \
     --sbin-path=${NGINX_SBIN_PATH}/nginx \
     --modules-path=${NGINX_MODULES_PATH} \
-    --conf-path=${NGINX_CONFIG_PATH}/nginx.conf \
+    --conf-path=${NGINX_ROOT_CONFIG_PATH}/nginx.conf \
     --pid-path=${NGINX_RUN_PATH}/nginx.pid \
     --lock-path=${NGINX_LOCK_PATH}/nginx.lock \
     --error-log-path=${NGINX_LOG_PATH}/error.log \
@@ -319,28 +328,28 @@ cd /tmp
 
 ## --> NGINX configuration files
 ### Get sWAF's NGINX configuration files
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_CONFIG_PATH}/nginx.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONFIG_PATH}/conf.d/main.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONFIG_PATH}/conf.d/events.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONFIG_PATH}/conf.d/http.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONFIG_PATH}/conf.d/stream.conf
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/http.srv.service1.conf.example
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONFIG_PATH}/conf.d/stream.srv.service2.conf.example
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_ROOT_CONFIG_PATH}/nginx.conf
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONF_D_CONFIG_PATH}/main.conf
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONF_D_CONFIG_PATH}/events.conf
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONF_D_CONFIG_PATH}/http.conf
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONF_D_CONFIG_PATH}/stream.conf
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example -o ${NGINX_CONF_D_CONFIG_PATH}/http.srv.service1.conf.example
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONF_D_CONFIG_PATH}/stream.srv.service2.conf.example
 ### Create related 'default' files
-cp ${NGINX_CONFIG_PATH}/conf.d/main.conf ${NGINX_CONFIG_PATH}/conf.d/main.conf.default
-cp ${NGINX_CONFIG_PATH}/conf.d/events.conf ${NGINX_CONFIG_PATH}/conf.d/events.conf.default
-cp ${NGINX_CONFIG_PATH}/conf.d/http.conf ${NGINX_CONFIG_PATH}/conf.d/http.conf.default
-cp ${NGINX_CONFIG_PATH}/conf.d/stream.conf ${NGINX_CONFIG_PATH}/conf.d/stream.conf.default
+cp ${NGINX_CONF_D_CONFIG_PATH}/main.conf ${NGINX_CONF_D_CONFIG_PATH}/main.conf.default
+cp ${NGINX_CONF_D_CONFIG_PATH}/events.conf ${NGINX_CONF_D_CONFIG_PATH}/events.conf.default
+cp ${NGINX_CONF_D_CONFIG_PATH}/http.conf ${NGINX_CONF_D_CONFIG_PATH}/http.conf.default
+cp ${NGINX_CONF_D_CONFIG_PATH}/stream.conf ${NGINX_CONF_D_CONFIG_PATH}/stream.conf.default
 
 ## --> ModSecurity configuration files
 ### Copy ModSecurity 'default' files
-cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
-cp /tmp/ModSecurity/unicode.mapping ${NGINX_CONFIG_PATH}/modsec.d/unicode.mapping
+cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
+cp /tmp/ModSecurity/unicode.mapping ${NGINX_MODSEC_D_CONFIG_PATH}/unicode.mapping
 ### Get sWAF's ModSecurity configuration files
-curl -SL ${CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_CONFIG_PATH}/modsec.d/modsec_includes.conf
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_MODSEC_D_CONFIG_PATH}/modsec_includes.conf
 
 ## --> OWASP Core Rule Set
-cd ${NGINX_CONFIG_PATH}/modsec.d/owasp-modsecurity-crs
+cd ${NGINX_CRS_CONFIG_PATH}
 ### Get CRS
 curl -SL https://github.com/coreruleset/coreruleset/archive/v${CRS_VER}.tar.gz -o coreruleset-${CRS_VER}.tar.gz
 tar xvfz coreruleset-${CRS_VER}.tar.gz
@@ -354,11 +363,12 @@ cp -R coreruleset-${CRS_VER}/util util
 rm -f coreruleset-${CRS_VER}.tar.gz
 
 ## --> NAXSI configuration files
-# TODO NAXSI conf to finish
+# TODO NAXSI conf to finish ${NGINX_NAXSI_D_CONFIG_PATH}
 
 
 # Tuning
-export CF_MODSECURITY=${NGINX_CONFIG_PATH}/modsec.d/modsecurity.conf
+cd /tmp
+export CF_MODSECURITY=${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
 
 ## --> modsecurity.conf
 sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
@@ -370,6 +380,15 @@ sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
 # TODO Tune below files that will allow to add exceptions without updates overwriting them in the future.
 # TODO Tune rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
 # TODO Tune rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+
+
+# Backup sWAF configuration package
+cd ${NGINX_ROOT_CONFIG_PATH}
+tar cvpfz ${SWAF_CONFIGFILES_BACKUP_FILE}
+
+
+# Set sWAF installation state
+echo "0" > ${SWAF_IS_SET_FILE}
 
 
 # Clean
