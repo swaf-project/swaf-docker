@@ -11,21 +11,20 @@
 # https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 
 
-# Pre-check
-# TODO Alpine version
-#cat /etc/os-release | grep VERSION_ID
-
-
 # Set build args
 ## Bootstrap script start time
 export BOOTSTRAP_STARTTIME=$(date +%s.%N)
-## Used packages versions
-export CRS_VER="3.3.0"
+## sWAF version
+# TODO to review in a more centralized way / release build
+export SWAF_VER="master"
+## Alpine image used for this sWAF version
+export ALPINE_VER="3.12.0"
+## Packages versions to use
 export MODSECURITY_VER="3.0.4"
+export CRS_VER="3.3.0"
 export NAXSI_VER="1.1a"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
-export SWAF_VER="master"
 ## LibreSSL paths
 export LIBRESSL_PREFIX_PATH="/"
 export LIBRESSL_EPREFIX_PATH="/usr"
@@ -53,6 +52,13 @@ export NGINX_USER=nginx
 export NGINX_GROUP=nginx
 ## Configfiles root URL
 export CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${SWAF_VER}/rootfs"
+
+
+# Check if this script is run on the proper Alpine version
+export $(cat /etc/os-release | grep VERSION_ID)
+if [[ $VERSION_ID == $ALPINE_VER ]]; then
+    exit 1
+fi
 
 
 # Install system packages
@@ -118,6 +124,10 @@ make
 make install
 make clean
 
+## --> Get ModSecurity-nginx connector
+cd /tmp
+git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
+
 ## --> Build ModSecurity v3
 cd /tmp
 git clone -b v${MODSECURITY_VER} --depth 1 https://github.com/SpiderLabs/ModSecurity.git
@@ -132,6 +142,11 @@ git submodule update
 make
 make install
 make clean
+
+## --> Get NGINX NAXSI module
+cd /tmp
+curl -SL https://github.com/nbs-system/naxsi/archive/${NAXSI_VER}.tar.gz -o naxsi-${NAXSI_VER}.tar.gz
+tar xvfz naxsi-${NAXSI_VER}.tar.gz
 
 ## --> Build LibreSSL - Needed by NGINX - Modules http_ssl_module + stream_ssl_module
 cd /tmp
@@ -154,17 +169,8 @@ make
 make install
 make clean
 
-## --> Get ModSecurity-nginx connector
-cd /tmp
-git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git
-
-## --> Get NGINX NAXSI module
-cd /tmp
-curl -SL https://github.com/nbs-system/naxsi/archive/${NAXSI_VER}.tar.gz -o naxsi-${NAXSI_VER}.tar.gz
-tar xvfz naxsi-${NAXSI_VER}.tar.gz
-
 ## --> Get NGINX http_geoip2_module
-# TODO
+# TODO GEOIP2 to finish
 #curl -SL https://github.com/leev/ngx_http_geoip2_module/archive/${GEOIP2_VER}.tar.gz -o ngx_http_geoip2_module-${GEOIP2_VER}.tar.gz
 #tar xvfz ngx_http_geoip2_module-${GEOIP2_VER}.tar.gz
 
@@ -348,7 +354,7 @@ cp -R coreruleset-${CRS_VER}/util util
 rm -f coreruleset-${CRS_VER}.tar.gz
 
 ## --> NAXSI configuration files
-# TODO
+# TODO NAXSI conf to finish
 
 
 # Tuning
