@@ -82,7 +82,8 @@ mkdir -p ${SWAF_CONFIGFILES_PATH}
 
 # Check if this script is run on the proper Alpine version
 export $(cat /etc/os-release | grep VERSION_ID)
-if [[ $VERSION_ID == $ALPINE_VER ]]; then
+if [[ $VERSION_ID != $ALPINE_VER ]]; then
+    echo "Alpine version ${ALPINE_VER} expected. Exiting..."
     exit 1
 fi
 
