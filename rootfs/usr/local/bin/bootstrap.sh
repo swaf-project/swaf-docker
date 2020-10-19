@@ -383,13 +383,17 @@ sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
 # TODO Tune rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
 
 
-# Backup sWAF configuration package
+# Set sWAF global configuration
+
+## --> Package sWAF core configuration (NGINX)
 cd ${NGINX_ROOT_CONFIG_PATH}
-tar cvpfz ${SWAF_CONFIGFILES_BACKUP_FILE}
+tar czv -f ${SWAF_CONFIGFILES_BACKUP_FILE} -C ${NGINX_ROOT_CONFIG_PATH} .
 
-
-# Set sWAF installation state
+## --> Set sWAF installation state
 echo "0" > ${SWAF_IS_SET_FILE}
+
+## --> Set sWAF motd
+curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/motd -o /etc/motd
 
 
 # Clean
