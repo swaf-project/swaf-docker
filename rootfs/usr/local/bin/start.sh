@@ -16,7 +16,7 @@ cat /etc/motd
 # Deploy /etc/nginx after potentially mounted volume
 if [[ $(cat /opt/swaf/SWAF_IS_SET) == 0 ]]; then
     echo "+ Deploying sWAF configuration..."
-    tar xzv -f /opt/swaf/swafconfig_backup.tar.gz -C /etc/nginx
+    tar xz -f /opt/swaf/swafconfig_backup.tar.gz -C /etc/nginx
     echo "1" > /opt/swaf/SWAF_IS_SET
 fi
 

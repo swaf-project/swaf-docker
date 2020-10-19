@@ -92,11 +92,14 @@ fi
 apk update
 
 ## Run packages
+# TODO list versions at build into the script report
 apk add --no-cache \
     curl \
     git \
     `### ModSecurity v3` \
     libcurl \
+    libgcc \
+    libstdc++ \
     lua \
     yajl \
     `### NGINX - Core` \
@@ -384,10 +387,11 @@ sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
 
 
 # Set sWAF global configuration
+echo "sWAF global configuration..."
 
 ## --> Package sWAF core configuration (NGINX)
 cd ${NGINX_ROOT_CONFIG_PATH}
-tar czv -f ${SWAF_CONFIGFILES_BACKUP_FILE} -C ${NGINX_ROOT_CONFIG_PATH} .
+tar cz -f ${SWAF_CONFIGFILES_BACKUP_FILE} -C ${NGINX_ROOT_CONFIG_PATH} .
 
 ## --> Set sWAF installation state
 echo "0" > ${SWAF_IS_SET_FILE}
