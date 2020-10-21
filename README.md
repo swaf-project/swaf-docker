@@ -151,6 +151,12 @@ As the volume is mounted on `/etc/nginx`, you have access to the full NGINX conf
 
 ### Service Controls
 
+* Test if the full NGINX configuration is valid before reloading:
+
+    ```shell
+    docker exec <CONTAINER> nginx -t
+    ```
+
 * Reload the NGINX service after making changes into  configuration or when TLS certificates have been created/issued/renewed:
 
     ```shell
