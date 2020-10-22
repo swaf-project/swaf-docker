@@ -159,22 +159,36 @@ You can also use default file editors like vi, ed, and also nano which is instal
     docker exec <CONTAINER> nginx -t
     ```
 
-* Reload the NGINX service after making changes into  configuration or when TLS certificates have been created/issued/renewed:
+* Reload NGINX configuration file:
 
     ```shell
     docker exec <CONTAINER> nginx -s reload
     ```
 
-* Stop the NGINX service:
+Needed also when TLS certificates have been created, issued or renewed.
+
+* Shut down gracefully NGINX service:
 
     ```shell
     docker exec <CONTAINER> nginx -s stop
     ```
 
-* Start the NGINX service:
+* Shut down immediately (fast shutdown) NGINX service:
+
+    ```shell
+    docker exec <CONTAINER> nginx -s stop
+    ```
+
+* Start NGINX service:
 
     ```shell
     docker exec <CONTAINER> nginx
+    ```
+
+* Reopen NGINX log files:
+
+    ```shell
+    docker exec <CONTAINER> nginx -s reopen
     ```
 
 ## Build Your Own Image
