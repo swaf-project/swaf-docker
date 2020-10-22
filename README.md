@@ -100,9 +100,11 @@ See [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] for further detai
 
 **_This part is under construction and will be seriously improved in future version_**.
 
-### Configuration Files
-
 As the volume is mounted on `/etc/nginx`, you have access to the full NGINX configuration tree and so, able to customize your deployment.
+
+You can also use default file editors like vi, ed, and also nano which is installed within the image.
+
+### Configuration Files
 
 ```text
 /etc/nginx/

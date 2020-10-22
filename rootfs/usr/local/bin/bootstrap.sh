@@ -96,6 +96,7 @@ apk update
 apk add --no-cache \
     curl \
     git \
+    nano \
     `### ModSecurity v3` \
     libcurl \
     libgcc \
@@ -387,7 +388,7 @@ sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
 
 
 # Set sWAF global configuration
-echo "sWAF global configuration..."
+echo "Preparing sWAF global configuration..."
 
 ## --> Package sWAF core configuration (NGINX)
 cd ${NGINX_ROOT_CONFIG_PATH}
