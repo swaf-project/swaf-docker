@@ -205,6 +205,10 @@ Build on [[Alpine Linux](https://www.alpinelinux.org/)] version **3.12.0**.
 
 |Alpine Package|Version|
 |--|--|
+|_libmagic_|5.38|
+|_ncurses-terminfo-base_|6.2_p20200523|
+|_ncurses-libs_|6.2_p20200523|
+|**nano**|4.9.3|
 |_ca-certificates_|20191127|
 |_nghttp2-libs_|1.41.0|
 |**libcurl**|7.69.1|
