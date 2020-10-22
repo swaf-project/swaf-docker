@@ -172,7 +172,7 @@ As the volume is mounted on `/etc/nginx`, you have access to the full NGINX conf
 * Start the NGINX service:
 
     ```shell
-    docker exec <CONTAINER> nginx -s start
+    docker exec <CONTAINER> nginx
     ```
 
 ## Build Your Own Image
