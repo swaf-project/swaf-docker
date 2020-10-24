@@ -15,8 +15,6 @@
 ## Bootstrap script start time
 export BOOTSTRAP_STARTTIME=$(date +%s.%N)
 ## sWAF version
-# TODO to review in a more centralized way / release build
-export SWAF_VER="master"
 ## Alpine image used for this sWAF version
 export ALPINE_VER="3.12.0"
 ## Packages versions to use
@@ -72,12 +70,12 @@ mkdir -p ${NGINX_SCGI_TEMP_PATH}
 export NGINX_USER=nginx
 export NGINX_GROUP=nginx
 ## sWAF configfiles
-export SWAF_CONFIGFILES_ROOT_URL="https://raw.githubusercontent.com/swaf-project/swaf-docker/${SWAF_VER}/rootfs"
-export SWAF_CONFIGFILES_PATH="/opt/swaf"
-export SWAF_CONFIGFILES_BACKUP_FILE="${SWAF_CONFIGFILES_PATH}/swafconfig_backup.tar.gz"
-export SWAF_IS_SET_FILE="${SWAF_CONFIGFILES_PATH}/SWAF_IS_SET"
+export SWAF_CONFIGFILES_SRC_PATH="/tmp"
+export SWAF_CONFIGFILES_WORK_PATH="/opt/swaf"
+export SWAF_CONFIGFILES_BACKUP_FILE="${SWAF_CONFIGFILES_WORK_PATH}/swafconfig_backup.tar.gz"
+export SWAF_IS_SET_FILE="${SWAF_CONFIGFILES_WORK_PATH}/SWAF_IS_SET"
 ### Create sWAF folders
-mkdir -p ${SWAF_CONFIGFILES_PATH}
+mkdir -p ${SWAF_CONFIGFILES_WORK_PATH}
 
 
 # Check if this script is run on the proper Alpine version
@@ -332,26 +330,36 @@ make clean
 cd /tmp
 
 ## --> NGINX configuration files
-### Get sWAF's NGINX configuration files
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/nginx.conf -o ${NGINX_ROOT_CONFIG_PATH}/nginx.conf
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/main.conf -o ${NGINX_CONF_D_CONFIG_PATH}/main.conf
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/events.conf -o ${NGINX_CONF_D_CONFIG_PATH}/events.conf
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.conf -o ${NGINX_CONF_D_CONFIG_PATH}/http.conf
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.conf -o ${NGINX_CONF_D_CONFIG_PATH}/stream.conf
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/http.srv.service1.conf.example -o ${NGINX_CONF_D_CONFIG_PATH}/http.srv.service1.conf.example
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/conf.d/stream.srv.service2.conf.example -o ${NGINX_CONF_D_CONFIG_PATH}/stream.srv.service2.conf.example
+### Copy sWAF's NGINX configuration files
+### Related to copied files in Dockerfile
+cp ${SWAF_CONFIGFILES_SRC_PATH}/nginx.conf ${NGINX_ROOT_CONFIG_PATH}/nginx.conf
+cp ${SWAF_CONFIGFILES_SRC_PATH}/main.conf ${NGINX_CONF_D_CONFIG_PATH}/main.conf
+cp ${SWAF_CONFIGFILES_SRC_PATH}/events.conf ${NGINX_CONF_D_CONFIG_PATH}/events.conf
+cp ${SWAF_CONFIGFILES_SRC_PATH}/http.conf ${NGINX_CONF_D_CONFIG_PATH}/http.conf
+cp ${SWAF_CONFIGFILES_SRC_PATH}/stream.conf ${NGINX_CONF_D_CONFIG_PATH}/stream.conf
+cp ${SWAF_CONFIGFILES_SRC_PATH}/http.srv.service1.conf.example ${NGINX_CONF_D_CONFIG_PATH}/http.srv.service1.conf.example
+cp ${SWAF_CONFIGFILES_SRC_PATH}/stream.srv.service2.conf.example ${NGINX_CONF_D_CONFIG_PATH}/stream.srv.service2.conf.example
 ### Create related 'default' files
 cp ${NGINX_CONF_D_CONFIG_PATH}/main.conf ${NGINX_CONF_D_CONFIG_PATH}/main.conf.default
 cp ${NGINX_CONF_D_CONFIG_PATH}/events.conf ${NGINX_CONF_D_CONFIG_PATH}/events.conf.default
 cp ${NGINX_CONF_D_CONFIG_PATH}/http.conf ${NGINX_CONF_D_CONFIG_PATH}/http.conf.default
 cp ${NGINX_CONF_D_CONFIG_PATH}/stream.conf ${NGINX_CONF_D_CONFIG_PATH}/stream.conf.default
 
+## --> NGINX default HTML pages
+### Copy sWAF's NGINX default HTML pages
+### Related to copied files in Dockerfile
+cp -f ${SWAF_CONFIGFILES_SRC_PATH}/index.html ${NGINX_PREFIX_PATH}/html/index.html
+cp -f ${SWAF_CONFIGFILES_SRC_PATH}/403.html ${NGINX_PREFIX_PATH}/html/403.html
+cp -f ${SWAF_CONFIGFILES_SRC_PATH}/404.html ${NGINX_PREFIX_PATH}/html/404.html
+cp -f ${SWAF_CONFIGFILES_SRC_PATH}/50x.html ${NGINX_PREFIX_PATH}/html/50x.html
+
 ## --> ModSecurity configuration files
 ### Copy ModSecurity 'default' files
 cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
 cp /tmp/ModSecurity/unicode.mapping ${NGINX_MODSEC_D_CONFIG_PATH}/unicode.mapping
-### Get sWAF's ModSecurity configuration files
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/nginx/modsec.d/modsec_includes.conf -o ${NGINX_MODSEC_D_CONFIG_PATH}/modsec_includes.conf
+### Copy sWAF's ModSecurity configuration files
+### Related to copied files in Dockerfile
+cp ${SWAF_CONFIGFILES_SRC_PATH}/modsec_includes.conf ${NGINX_MODSEC_D_CONFIG_PATH}/modsec_includes.conf
 
 ## --> OWASP Core Rule Set
 cd ${NGINX_CRS_CONFIG_PATH}
@@ -397,8 +405,9 @@ tar cz -f ${SWAF_CONFIGFILES_BACKUP_FILE} -C ${NGINX_ROOT_CONFIG_PATH} .
 ## --> Set sWAF installation state
 echo "0" > ${SWAF_IS_SET_FILE}
 
-## --> Set sWAF motd
-curl -SL ${SWAF_CONFIGFILES_ROOT_URL}/etc/motd -o /etc/motd
+## --> Copy sWAF motd
+### Related to copied files in Dockerfile
+cp ${SWAF_CONFIGFILES_SRC_PATH}/motd /etc/motd
 
 
 # Clean

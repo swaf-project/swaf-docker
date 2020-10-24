@@ -13,12 +13,18 @@ FROM alpine:3.12.0
 
 LABEL description="A simple Web Application Firewall docker image"
 LABEL maintainer="styx0x6 <https://github.com/styx0x6>"
-
+# Others labels are dynamically set at built-time (See repo's GitHub Actions)
 
 # Bootstrap sWAF
 ## --> Copy scripts
 COPY rootfs/usr/local/bin/bootstrap.sh /usr/local/bin/bootstrap.sh
 COPY rootfs/usr/local/bin/start.sh /usr/local/bin/start.sh
+## --> Copy static files
+COPY rootfs/etc/motd /tmp/
+COPY rootfs/etc/nginx/*.conf* /tmp/
+COPY rootfs/etc/nginx/conf.d/*.conf* /tmp/
+COPY rootfs/etc/nginx/modsec.d/*.conf* /tmp/
+COPY rootfs/var/lib/nginx/html/*.html /tmp/
 ## --> One RUN to build and avoid a multi-layered and oversized image
 RUN chmod +x /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/bootstrap.sh \
