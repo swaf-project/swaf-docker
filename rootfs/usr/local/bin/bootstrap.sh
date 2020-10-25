@@ -390,6 +390,7 @@ export CF_MODSECURITY=${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
 ## --> modsecurity.conf
 sed -i "s|SecRuleEngine DetectionOnly|SecRuleEngine On|" ${CF_MODSECURITY}
 sed -i "s|SecAuditLog /var/log/modsec_audit.log|SecAuditLog ${MODSEC_LOG_PATH}/modsec_audit.log|" ${CF_MODSECURITY}
+sed -i "s|SecUnicodeMapFile unicode.mapping 20127|SecUnicodeMapFile /etc/nginx/modsec.d/unicode.mapping 20127|" ${CF_MODSECURITY}
 # TODO Tune modsecurity.conf
 #sed -i 's|SecAuditLogType Serial|SecAuditLogType Concurrent|' ${CF_MODSECURITY}
 #Specify the path for concurrent audit logging.
