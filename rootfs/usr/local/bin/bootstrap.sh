@@ -23,6 +23,10 @@ export CRS_VER="3.3.0"
 export NAXSI_VER="1.1a"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
+## ModSecurity paths
+export MODSEC_LOG_PATH="/var/log/modsec"
+### Create NGINX and modules folders
+mkdir -p ${MODSEC_LOG_PATH}
 ## LibreSSL paths
 export LIBRESSL_PREFIX_PATH="/"
 export LIBRESSL_EPREFIX_PATH="/usr"
@@ -384,10 +388,12 @@ cd /tmp
 export CF_MODSECURITY=${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
 
 ## --> modsecurity.conf
-sed -i 's|SecRuleEngine DetectionOnly|SecRuleEngine On|' ${CF_MODSECURITY}
+sed -i "s|SecRuleEngine DetectionOnly|SecRuleEngine On|" ${CF_MODSECURITY}
+sed -i "s|SecAuditLog /var/log/modsec_audit.log|SecAuditLog ${MODSEC_LOG_PATH}/modsec_audit.log|" ${CF_MODSECURITY}
 # TODO Tune modsecurity.conf
 #sed -i 's|SecAuditLogType Serial|SecAuditLogType Concurrent|' ${CF_MODSECURITY}
-#sed -i 's|SecAuditLog /var/log/modsec_audit.log|SecAuditLog /usr/local/nginx/logs/modsec_audit.log|' ${CF_MODSECURITY}
+#Specify the path for concurrent audit logging.
+#SecAuditLogStorageDir /opt/modsecurity/var/audit/
 # TODO Check SecServerSignature to empty it by default
 # TODO Tune crs-setup.conf
 # TODO Tune below files that will allow to add exceptions without updates overwriting them in the future.
