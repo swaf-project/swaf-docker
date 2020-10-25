@@ -52,6 +52,13 @@ Details of used packages versions is listed [below](#build-packages-versions).
 * Versionized releases are built in [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)] repository on Docker Hub. Checkout releases in [[Releases Page](https://github.com/swaf-project/swaf-docker/releases)].
 * `master` branch is continuously built in [[swafproject/swaf-dev](https://hub.docker.com/r/swafproject/swaf-dev)] repository on Docker Hub.
 
+### Dev image
+
+Last dev image version (based on master head):
+
+[![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
+[![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
+
 ### Changelog
 
 Change details are listed into the changelog: [[CHANGES](CHANGES)]
@@ -71,8 +78,8 @@ Change details are listed into the changelog: [[CHANGES](CHANGES)]
         --name swaf \
         --restart=always \
         --net=host \
-        -v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw \
-        -v <VOLUME_NGINX_LOG>:/var/log/nginx \
+        [-v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw] \
+        [-v <VOLUME_NGINX_LOG>:/var/log/nginx] \
         swafproject/swaf
     ```
 
@@ -89,8 +96,8 @@ Change details are listed into the changelog: [[CHANGES](CHANGES)]
         --net=bridge \
         -p 80:80/tcp \
         -p 443:443/tcp \
-        -v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw \
-        -v <VOLUME_NGINX_LOG>:/var/log/nginx \
+        [-v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw] \
+        [-v <VOLUME_NGINX_LOG>:/var/log/nginx] \
         swafproject/swaf
     ```
 
@@ -100,9 +107,9 @@ See [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] for further detai
 
 **_This part is under construction and will be seriously improved in future version_**.
 
-As the volume is mounted on `/etc/nginx`, you have access to the full NGINX configuration tree and so, able to customize your deployment.
+If a volume is mounted on `/etc/nginx/`, you have access to the full NGINX configuration tree and so, able to customize your deployment.
 
-You can also use default file editors like vi, ed, and also nano which is installed within the image.
+You can also use default file editors like _vi_, _ed_, and also _nano_ which is installed within the image to edit te configuration.
 
 ### Configuration Files
 
@@ -141,7 +148,7 @@ You can also use default file editors like vi, ed, and also nano which is instal
 |../conf.d/**stream.conf**|**stream context** global directives affecting all stream virtual servers. Preset. Can be customized.|
 |../conf.d/**http.srv.*.conf**|Configuration files to define sections for HTTP virtual servers and upstreams. Can be splitted into multiple files according to your needs. Example file provided in _http.srv.service1.conf.example_.|
 |../conf.d/**stream.srv.*.conf**|Configuration files to define sections for stream virtual servers and upstreams. Can be splitted into multiple files according to your needs. Example file provided in _stream.srv.service2.conf.example_.|
-|../modesec.d/modsec_includes.conf|ModSecurity's configuration entrypoint. Defines *include* directives for below files. ***Should not be directly modified***.|
+|../modesec.d/modsec_includes.conf|ModSecurity's configuration entrypoint. Defines *include* directives for below files. ***Should not be directly modified***. The order of file inclusion in the configuration should always be: **1. modsecurity.conf** / **2. crs-setup.conf** / **3. rules/*.conf (the CRS rule files)**.|
 |../modesec.d/**modsecurity.conf**|First ModSecurity loaded configuration file concerning ModSecurity's global settings. Preset. Can be customized.|
 |../owasp-modsecurity-crs/**crs-setup.conf**|Second ModSecurity loaded configuration file concerning CRS settings. Default settings. Can be customized.|
 |../owasp-modsecurity-crs/rules/**REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf**|To include customized request rules.|
@@ -150,6 +157,53 @@ You can also use default file editors like vi, ed, and also nano which is instal
 |../owasp-modsecurity-crs/rules/*.data|Core Rule Set. ***Should not be directly modified***.|
 
 ***.default** files are set for restore needs.
+
+### Custom web pages
+
+Default index page and error pages are customizable in `/var/lib/nginx/html/`.
+
+Mountable as a volume for a more easy access.
+
+### Log files
+
+Paths are mountable as volumes to export logs:
+
+* `/var/log/nginx/` for NGINX logs.
+* `/var/log/modsec/` for ModSecurity logs.
+
+#### Error logs
+
+* Defined in NGINX main context configuration (`main.conf`):
+
+```nginx
+error_log /var/log/nginx/error.log info;
+```
+
+#### Access logs
+
+* Defined in NGINX HTTP context configuration (`http.conf`) for default access logging:
+
+```nginx
+log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                  '$status $body_bytes_sent "$http_referer" '
+                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+access_log /var/log/nginx/access.log main;
+```
+
+* To define in NGINX server context configuration (`http.srv.*.conf`) for each virtual server:
+
+```nginx
+access_log /var/log/nginx/localhost.access.log main
+```
+
+#### ModSecurity Audit logs
+
+* Defined in ModSecurity global configuration (`modsecurity.conf`):
+
+```nginx
+SecAuditLog /var/log/modsec/modsec_audit.log
+```
 
 ### Service Controls
 
@@ -165,7 +219,7 @@ You can also use default file editors like vi, ed, and also nano which is instal
     docker exec <CONTAINER> nginx -s reload
     ```
 
-Needed also when TLS certificates have been created, issued or renewed.
+    Needed also when TLS certificates have been created, issued or renewed.
 
 * Shut down gracefully NGINX service:
 
