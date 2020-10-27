@@ -61,7 +61,7 @@ Last dev image version (based on master head):
 
 ### Changelog
 
-Change details are listed into the changelog: [[CHANGES](CHANGES)]
+Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
 
 ## Run
 
@@ -311,7 +311,7 @@ Build on [[Alpine Linux](https://www.alpinelinux.org/)] version **3.12.0**.
 
 |Library / Project|Version|
 |--|--|
-|[ssdeep](https://github.com/ssdeep-project/ssdeep)|Last version from GitHub at build date|
+|[SSDEEP](https://github.com/ssdeep-project/ssdeep)|Last version from GitHub at build date|
 |[ModSecurity-nginx connector](https://github.com/SpiderLabs/ModSecurity-nginx)|Last version from GitHub at build date|
 |[ModSecurity](https://github.com/SpiderLabs/ModSecurity)|3.0.4|
 |[Core Rule Set](https://github.com/coreruleset/coreruleset)|3.3.0|
