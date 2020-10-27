@@ -13,7 +13,10 @@ FROM alpine:3.12.0
 
 LABEL description="A simple Web Application Firewall docker image"
 LABEL maintainer="styx0x6 <https://github.com/styx0x6>"
-# Others labels are dynamically set at built-time (See repo's GitHub Actions)
+# https://github.com/opencontainers/image-spec/blob/master/annotations.md
+LABEL org.opencontainers.image.authors="styx0x6 <https://github.com/styx0x6>"
+LABEL org.opencontainers.image.vendor="https://github.com/swaf-project"
+# Others labels are dynamically set at built-time (See repo's GitHub ActionsLABEL org.opencontainers.image.authors="styx0x6 <https://github.com/styx0x6>")
 
 # Bootstrap sWAF
 ## --> Copy scripts

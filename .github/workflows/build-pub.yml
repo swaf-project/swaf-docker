@@ -106,6 +106,7 @@ jobs:
             org.opencontainers.image.title=${{ steps.prep.outputs.title }}
             org.opencontainers.image.description=${{ fromJson(steps.repo.outputs.result).description }}
             org.opencontainers.image.url=${{ fromJson(steps.repo.outputs.result).html_url }}
+            org.opencontainers.image.documentation=${{ fromJson(steps.repo.outputs.result).html_url }}/wiki
             org.opencontainers.image.source=${{ fromJson(steps.repo.outputs.result).clone_url }}
             org.opencontainers.image.version=${{ steps.prep.outputs.version }}
             org.opencontainers.image.created=${{ steps.prep.outputs.created }}
