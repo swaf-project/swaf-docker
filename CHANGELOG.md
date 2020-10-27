@@ -45,3 +45,4 @@ Initial Features:
   + unicode.mapping path properly set
 * Custom modsec_includes.conf staged for ModSecurity configuration load.
 * Custom motd for sWAF.
+* Set Docker image labels.
