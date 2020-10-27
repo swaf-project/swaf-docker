@@ -7,11 +7,11 @@ Initial Features:
 * Dockerfile based on Alpine Linux 3.12.0.
 * Bootstrap script to compile, install, deploy & configure tools.
 * Docker entrypoint script to deploy the sWAF image's initial configuration at the first time and to launch NGINX each time starting.
-* [Bootstrap] Install tools:
+* Additional installed tools:
   + curl 7.69.1
   + git 2.26.2
   + nano 4.9.3
-* [Bootstrap] Compile ModSecurity 3.0.4 with:
+* ModSecurity 3.0.4 compiled with:
   + LibCURL 7.69.1
   + YAJL 2.1.0
   + LibXML2 2.9.10
@@ -19,8 +19,8 @@ Initial Features:
   + LUA 5.1.5
   + Test Utilities
   + SecDebugLog
-* [Bootstrap] Compile LibreSSL 3.2.1.
-* [Bootstrap] Compile NGINX 1.19.2 with (detailed compilation options are listed into the bootstrap script):
+* LibreSSL 3.2.1 compiled.
+* NGINX 1.19.2 compiled with (detailed compilation options are listed into the bootstrap script):
   + using threads
   + using system PCRE library
   + using LibreSSL library with TLS 1.3 and TLS SNI support
