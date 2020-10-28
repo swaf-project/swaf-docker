@@ -17,7 +17,7 @@ env:
   TITLE_DEV: sWAF-dev
   TITLE_REL: sWAF
   PLATFORMS_DEV: linux/amd64
-  PLATFORMS_REL: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8,linux/ppc64le,linux/s390x
+  PLATFORMS_REL: linux/amd64
 
 jobs:
   # Push image to Docker Hub
