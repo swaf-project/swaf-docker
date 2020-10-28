@@ -9,8 +9,9 @@
 
 **sWAF** is a **simple Web Application Firewall** [Docker image](https://hub.docker.com/r/swafproject/swaf), pre-configured to be easily used within your web services architecture. It runs [NGINX](https://www.nginx.com/) as dedicated reverse proxy enhanced by powerful WAF engines: [ModSecurity v3](https://www.modsecurity.org/) using [OWASP® ModSecurity Core Rule Set (CRS)](https://coreruleset.org/) rules and [NAXSI](https://github.com/nbs-system/naxsi).
 
-[![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf)
+[![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf?sort=semver&logo=docker&color=blue)](https://hub.docker.com/r/swafproject/swaf)
 [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf)
+[![GitHub Release](https://img.shields.io/github/release/swaf-project/swaf-docker.svg?logo=github&sort=semver&color=brightgreen)](https://github.com/swaf-project/swaf-docker/releases)
 [![Travis CI Build Status](https://img.shields.io/travis/swaf-project/swaf-docker/master.svg?logo=travis&label=master)](https://travis-ci.org/swaf-project/swaf-docker)
 [![License](https://img.shields.io/github/license/swaf-project/swaf-docker?color=blue)](https://raw.githubusercontent.com/swaf-project/swaf-docker/master/LICENSE)
 
@@ -24,7 +25,7 @@ That's why **sWAF** is here to offer a **simple WAF** Docker image acting as an 
 
 **[Client]** --`hxxp(s)://drive.cloud.me`--> **[sWAF > rProxy+Security]** --`hxxp://a.b.c.d:6666`--> **[webservice1]**
 
-### Features
+### Main Features
 
 * **NGINX** with:
   + **LibreSSL** & **TLS 1.3** Support
@@ -49,12 +50,12 @@ Details of used packages versions is listed [below](#build-packages-versions).
 
 ### Releases
 
-* Versionized releases are built in [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)] repository on Docker Hub. Checkout releases in [[Releases Page](https://github.com/swaf-project/swaf-docker/releases)].
+* Releases are built in [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)] repository on Docker Hub. Checkout releases in [[Releases Page](https://github.com/swaf-project/swaf-docker/releases)].
 * `master` branch is continuously built in [[swafproject/swaf-dev](https://hub.docker.com/r/swafproject/swaf-dev)] repository on Docker Hub.
 
-### Dev image
+### Development
 
-Last dev image version (based on master head):
+Last development image version (based on master head):
 
 [![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
 [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
@@ -63,7 +64,11 @@ Last dev image version (based on master head):
 
 Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
 
-## Run
+## Deploy & Configure
+
+See [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] for further details. **_(This part, as the Wiki, is under construction and will be seriously improved in future version)_**.
+
+### Run
 
 1. Get the sWAF Docker image:
 
@@ -76,8 +81,8 @@ Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
     ```shell
     docker run -d \
         --name swaf \
-        --restart=always \
-        --net=host \
+        --restart always \
+        --net host \
         [-v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw] \
         [-v <VOLUME_NGINX_LOG>:/var/log/nginx] \
         swafproject/swaf
@@ -92,8 +97,8 @@ Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
     ```shell
     docker run -d \
         --name swaf \
-        --restart=always \
-        --net=bridge \
+        --restart always \
+        --net bridge \
         -p 80:80/tcp \
         -p 443:443/tcp \
         [-v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw] \
@@ -101,17 +106,13 @@ Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
         swafproject/swaf
     ```
 
-## Deploy & Configure
-
-See [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] for further details. (_Under construction_)
-
-**_This part is under construction and will be seriously improved in future version_**.
+### Configure
 
 If a volume is mounted on `/etc/nginx/`, you have access to the full NGINX configuration tree and so, able to customize your deployment.
 
 You can also use default file editors like _vi_, _ed_, and also _nano_ which is installed within the image to edit te configuration.
 
-### Configuration Files
+#### Configuration Files
 
 ```text
 /etc/nginx/
@@ -158,20 +159,20 @@ You can also use default file editors like _vi_, _ed_, and also _nano_ which is 
 
 ***.default** files are set for restore needs.
 
-### Custom web pages
+#### Custom web pages
 
 Default index page and error pages are customizable in `/var/lib/nginx/html/`.
 
 Mountable as a volume for a more easy access.
 
-### Log files
+#### Log files
 
 Paths are mountable as volumes to export logs:
 
 * `/var/log/nginx/` for NGINX logs.
 * `/var/log/modsec/` for ModSecurity logs.
 
-#### Error logs
+##### Error logs
 
 * Defined in NGINX main context configuration (`main.conf`):
 
@@ -179,7 +180,7 @@ Paths are mountable as volumes to export logs:
 error_log /var/log/nginx/error.log info;
 ```
 
-#### Access logs
+##### Access logs
 
 * Defined in NGINX HTTP context configuration (`http.conf`) for default access logging:
 
@@ -197,7 +198,7 @@ access_log /var/log/nginx/access.log main;
 access_log /var/log/nginx/localhost.access.log main
 ```
 
-#### ModSecurity Audit logs
+##### ModSecurity Audit logs
 
 * Defined in ModSecurity global configuration (`modsecurity.conf`):
 
@@ -205,7 +206,7 @@ access_log /var/log/nginx/localhost.access.log main
 SecAuditLog /var/log/modsec/modsec_audit.log
 ```
 
-### Service Controls
+### Control
 
 * Test if the full NGINX configuration is valid before reloading:
 
