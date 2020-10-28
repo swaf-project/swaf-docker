@@ -20,7 +20,7 @@ export ALPINE_VER="3.12.0"
 ## Packages versions to use
 export MODSECURITY_VER="3.0.4"
 export CRS_VER="3.3.0"
-export NAXSI_VER="1.1a"
+export NAXSI_VER="1.2"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
 ## ModSecurity paths
@@ -380,7 +380,7 @@ cp -R coreruleset-${CRS_VER}/util util
 rm -f coreruleset-${CRS_VER}.tar.gz
 
 ## --> NAXSI configuration files
-# TODO NAXSI conf to finish ${NGINX_NAXSI_D_CONFIG_PATH}
+cp /tmp/naxsi-${NAXSI_VER}/naxsi_config/naxsi_core.rules ${NGINX_NAXSI_D_CONFIG_PATH}/naxsi_core.rules
 
 
 # Tuning
