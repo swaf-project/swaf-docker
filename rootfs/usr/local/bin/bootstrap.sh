@@ -12,31 +12,37 @@
 
 
 # Set build args
-## Bootstrap script start time
+
+## --> Bootstrap script start time
 export BOOTSTRAP_STARTTIME=$(date +%s.%N)
-## sWAF version
-## Alpine image used for this sWAF version
+
+## --> sWAF version
+### Alpine image used for this sWAF version
 export ALPINE_VER="3.12.0"
-## Packages versions to use
+
+## --> Packages versions to use
 export MODSECURITY_VER="3.0.4"
 export CRS_VER="3.3.0"
 export NAXSI_VER="1.2"
 export LIBRESSL_VER="3.2.1"
 export NGINX_VER="1.19.2"
-## ModSecurity paths
+export ACME_VER="2.8.7"
+
+## --> ModSecurity paths
 export MODSEC_LOG_PATH="/var/log/modsec"
 ### Create NGINX and modules folders
 mkdir -p ${MODSEC_LOG_PATH}
-## LibreSSL paths
+
+## --> LibreSSL paths & binary name
 export LIBRESSL_PREFIX_PATH="/"
 export LIBRESSL_EPREFIX_PATH="/usr"
 export LIBRESSL_CONFIG_PATH="/etc"
 export LIBRESSL_RUN_PATH="/run"
 export LIBRESSL_INCLUDE_PATH="${LIBRESSL_EPREFIX_PATH}/include"
 export LIBRESSL_DATAROOT_PATH="${LIBRESSL_EPREFIX_PATH}/share"
-## LibreSSL binary name
 export LIBRESSL_BIN_NAME="libressl"
-## NGINX paths (including modules configfiles paths)
+
+## --> NGINX paths (including modules configfiles paths) & user/group
 export NGINX_PREFIX_PATH="/var/lib/nginx"
 export NGINX_SBIN_PATH="/usr/sbin"
 export NGINX_MODULES_PATH="/usr/lib/nginx/modules"
@@ -53,6 +59,8 @@ export NGINX_PROXY_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/proxy"
 export NGINX_FASTCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/fastcgi"
 export NGINX_UWSGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/uwsgi"
 export NGINX_SCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/scgi"
+export NGINX_USER=nginx
+export NGINX_GROUP=nginx
 ### Create NGINX and modules folders
 mkdir -p ${NGINX_PREFIX_PATH}
 mkdir -p ${NGINX_SBIN_PATH}
@@ -70,10 +78,30 @@ mkdir -p ${NGINX_PROXY_TEMP_PATH}
 mkdir -p ${NGINX_FASTCGI_TEMP_PATH}
 mkdir -p ${NGINX_UWSGI_TEMP_PATH}
 mkdir -p ${NGINX_SCGI_TEMP_PATH}
-## NGINX user/group
-export NGINX_USER=nginx
-export NGINX_GROUP=nginx
-## sWAF configfiles
+
+## --> acme.sh paths & configuration vars
+export ACME_HOME_PATH="/opt/acme"
+export ACME_CONFIG_HOME_PATH="${ACME_HOME_PATH}/data"
+export ACME_CERT_HOME_PATH="/var/lib/certs"
+export ACME_CHAL_ROOT_PATH="/var/lib/acme"
+export ACME_CHAL_SUBPATH="${ACME_CHAL_ROOT_PATH}/.well-known/acme-challenge"
+# TODO Set ACME_ACC_EMAIL as a variable from bootstrap script args(?) or a config file(?)
+#export ACME_ACC_EMAIL="myswaf@example.org"
+export ACME_ACC_EMAIL=""
+export ACME_ACC_KEY="${ACME_HOME_PATH}/account.key"
+export ACME_ACC_CONF="${ACME_HOME_PATH}/account.conf"
+export ACME_USERAGENT="acme.sh/${ACME_VER} for sWAF"
+### Create acme.sh folders
+mkdir -p ${ACME_HOME_PATH}
+mkdir -p ${ACME_CONFIG_HOME_PATH}
+mkdir -p ${ACME_CERT_HOME_PATH}
+mkdir -p ${ACME_CHAL_ROOT_PATH}
+mkdir -p ${ACME_CHAL_SUBPATH}
+chown -R ${NGINX_USER}:${NGINX_GROUP} ${ACME_CHAL_ROOT_PATH}
+# TODO needed? chmod -R 0555 ${ACME_CHAL_ROOT_PATH}
+
+
+## --> sWAF paths & configfiles
 export SWAF_CONFIGFILES_SRC_PATH="/tmp"
 export SWAF_CONFIGFILES_WORK_PATH="/opt/swaf"
 export SWAF_CONFIGFILES_BACKUP_FILE="${SWAF_CONFIGFILES_WORK_PATH}/swafconfig_backup.tar.gz"
@@ -93,7 +121,7 @@ fi
 # Install system packages
 apk update
 
-## Run packages
+## --> Run packages
 # TODO list versions at build into the script report
 apk add --no-cache \
     curl \
@@ -119,7 +147,7 @@ apk add --no-cache \
 ### Turn git detached message off
 git config --global advice.detachedHead false
 
-## Build packages
+## --> Build packages
 apk add --no-cache --virtual .tmp-build-tools \
     autoconf \
     automake \
@@ -209,9 +237,9 @@ make clean
 
 
 # Build NGINX
-cd /tmp
 
 ## --> Get NGINX sources
+cd /tmp
 curl -SLO http://nginx.org/download/nginx-${NGINX_VER}.tar.gz
 tar xvfz nginx-${NGINX_VER}.tar.gz
 
@@ -330,10 +358,37 @@ make install
 make clean
 
 
-# Prepare configuration files
+# Install acme.sh
+
+## --> Get acme.sh sources
 cd /tmp
+curl -SL https://github.com/acmesh-official/acme.sh/archive/${ACME_VER}.tar.gz -o acme.sh-${ACME_VER}.tar.gz
+tar xvfz acme.sh-${ACME_VER}.tar.gz
+
+## --> Install acme.sh
+cd /tmp/acme.sh-${ACME_VER}
+### Patch acme.sh script with LibreSSL which is retrocompatible with OpenSSL and used here in sWAF
+sed -i 's|DEFAULT_OPENSSL_BIN="openssl"|DEFAULT_OPENSSL_BIN="libressl"|' /tmp/acme.sh-${ACME_VER}/acme.sh
+### Launch installation
+./acme.sh --install \
+    `#### Install options:` \
+    --noprofile \
+    --home ${ACME_HOME_PATH} \
+    --config-home ${ACME_CONFIG_HOME_PATH} \
+    --cert-home ${ACME_CERT_HOME_PATH} \
+    --accountemail "${ACME_ACC_EMAIL}" \
+    --accountkey ${ACME_ACC_KEY} \
+    --accountconf ${ACME_ACC_CONF} \
+    --useragent "${ACME_USERAGENT}"
+
+## --> Set a symlink for easier usage
+ln -s /opt/acme/acme.sh /usr/bin/acme.sh
+
+
+# Prepare configuration files
 
 ## --> NGINX configuration files
+cd /tmp
 ### Copy sWAF's NGINX configuration files
 ### Related to copied files in Dockerfile
 cp ${SWAF_CONFIGFILES_SRC_PATH}/nginx.conf ${NGINX_ROOT_CONFIG_PATH}/nginx.conf
@@ -350,6 +405,7 @@ cp ${NGINX_CONF_D_CONFIG_PATH}/http.conf ${NGINX_CONF_D_CONFIG_PATH}/http.conf.d
 cp ${NGINX_CONF_D_CONFIG_PATH}/stream.conf ${NGINX_CONF_D_CONFIG_PATH}/stream.conf.default
 
 ## --> NGINX default HTML pages
+cd /tmp
 ### Copy sWAF's NGINX default HTML pages
 ### Related to copied files in Dockerfile
 cp -f ${SWAF_CONFIGFILES_SRC_PATH}/index.html ${NGINX_PREFIX_PATH}/html/index.html
@@ -358,6 +414,7 @@ cp -f ${SWAF_CONFIGFILES_SRC_PATH}/404.html ${NGINX_PREFIX_PATH}/html/404.html
 cp -f ${SWAF_CONFIGFILES_SRC_PATH}/50x.html ${NGINX_PREFIX_PATH}/html/50x.html
 
 ## --> ModSecurity configuration files
+cd /tmp
 ### Copy ModSecurity 'default' files
 cp /tmp/ModSecurity/modsecurity.conf-recommended ${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
 cp /tmp/ModSecurity/unicode.mapping ${NGINX_MODSEC_D_CONFIG_PATH}/unicode.mapping
@@ -380,6 +437,7 @@ cp -R coreruleset-${CRS_VER}/util util
 rm -f coreruleset-${CRS_VER}.tar.gz
 
 ## --> NAXSI configuration files
+cd /tmp
 cp /tmp/naxsi-${NAXSI_VER}/naxsi_config/naxsi_core.rules ${NGINX_NAXSI_D_CONFIG_PATH}/naxsi_core.rules
 
 
@@ -391,11 +449,13 @@ export CF_MODSECURITY=${NGINX_MODSEC_D_CONFIG_PATH}/modsecurity.conf
 sed -i "s|SecRuleEngine DetectionOnly|SecRuleEngine On|" ${CF_MODSECURITY}
 sed -i "s|SecAuditLog /var/log/modsec_audit.log|SecAuditLog ${MODSEC_LOG_PATH}/modsec_audit.log|" ${CF_MODSECURITY}
 sed -i "s|SecUnicodeMapFile unicode.mapping 20127|SecUnicodeMapFile /etc/nginx/modsec.d/unicode.mapping 20127|" ${CF_MODSECURITY}
-# TODO Tune modsecurity.conf
+# TODO Tune more modsecurity.conf
 #sed -i 's|SecAuditLogType Serial|SecAuditLogType Concurrent|' ${CF_MODSECURITY}
 #Specify the path for concurrent audit logging.
 #SecAuditLogStorageDir /opt/modsecurity/var/audit/
 # TODO Check SecServerSignature to empty it by default
+
+## --> crs-setup.conf
 # TODO Tune crs-setup.conf
 # TODO Tune below files that will allow to add exceptions without updates overwriting them in the future.
 # TODO Tune rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
@@ -420,15 +480,17 @@ cp ${SWAF_CONFIGFILES_SRC_PATH}/motd /etc/motd
 # Clean
 cd /
 
-## Remove build tools
+## --> Remove build tools
 apk del .tmp-build-tools
 
-## Delete cache and build files
+## --> Delete cache and build files
 rm -rf /var/cache/apk/*
 rm -rf /tmp/*
 
 
 # Outro
+
+## --> sWAF Bootstrap Script Report
 echo -e "\n\n"
 echo "------------========================================------------"
 echo "sWAF Bootstrap Script Report"
@@ -443,5 +505,11 @@ echo
 echo "--> NGINX details:"
 echo "> # nginx -V"
 nginx -V
+echo
+echo "--> acme.sh details:"
+echo "> # acme.sh -v"
+acme.sh -v
+echo "> # crontab -l"
+crontab -l
 echo "------------========================================------------"
 echo -e "\n\n"
