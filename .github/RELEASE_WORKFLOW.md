@@ -8,7 +8,10 @@ This document describes the workflow to apply for releasing.
 
     * Code is ready, documented, tested for versioning.
     * Update `CHANGELOG.md` according to the release version, release date and change details, and the [[Changelog Template](#changelog-template)] below.
+    * Delete empty sections in `CHANGELOG.md`.
+    * Review `README.md` by removing roadmap-related messages ("Not Yet Implemented", "Roadmap vX.Y.Z", etc.).
     * Commit `CHANGELOG.md`.
+    * Commit `README.md`.
 
 2. Tag & Release
 
@@ -39,11 +42,15 @@ New Features:
 
 * <TEXT>
 
-Improvement:
+Improvements:
 
 * <TEXT>
 
-Bugfixes:
+Security Fixes:
+
+* <TEXT>
+
+Bug Fixes:
 
 * <TEXT>
 ```
