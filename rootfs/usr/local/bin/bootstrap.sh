@@ -61,7 +61,7 @@ export NGINX_UWSGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/uwsgi"
 export NGINX_SCGI_TEMP_PATH="${NGINX_PREFIX_PATH}/tmp/scgi"
 export NGINX_USER=nginx
 export NGINX_GROUP=nginx
-### Create NGINX and modules folders
+### Create NGINX and related modules folders
 mkdir -p ${NGINX_PREFIX_PATH}
 mkdir -p ${NGINX_SBIN_PATH}
 mkdir -p ${NGINX_MODULES_PATH}
@@ -78,6 +78,8 @@ mkdir -p ${NGINX_PROXY_TEMP_PATH}
 mkdir -p ${NGINX_FASTCGI_TEMP_PATH}
 mkdir -p ${NGINX_UWSGI_TEMP_PATH}
 mkdir -p ${NGINX_SCGI_TEMP_PATH}
+### Create NGINX running user & group
+adduser -D -H -h ${NGINX_PREFIX_PATH} -g "sWAF User" -s /sbin/nologin ${NGINX_USER} ${NGINX_GROUP}
 
 ## --> acme.sh paths & configuration vars
 export ACME_HOME_PATH="/opt/acme"
@@ -101,9 +103,12 @@ chown -R ${NGINX_USER}:${NGINX_GROUP} ${ACME_CHAL_ROOT_PATH}
 # TODO needed? chmod -R 0555 ${ACME_CHAL_ROOT_PATH}
 
 
-## --> sWAF paths & configfiles
+## --> sWAF paths, configfiles & variables
+### sWAF paths
 export SWAF_CONFIGFILES_SRC_PATH="/tmp"
 export SWAF_CONFIGFILES_WORK_PATH="/opt/swaf"
+export SWAF_BIN_SYMLINK_PATH="/usr/local/bin"
+### sWAF configfiles
 export SWAF_CONFIGFILES_BACKUP_FILE="${SWAF_CONFIGFILES_WORK_PATH}/swafconfig_backup.tar.gz"
 export SWAF_IS_SET_FILE="${SWAF_CONFIGFILES_WORK_PATH}/SWAF_IS_SET"
 ### Create sWAF folders
@@ -243,9 +248,6 @@ cd /tmp
 curl -SLO http://nginx.org/download/nginx-${NGINX_VER}.tar.gz
 tar xvfz nginx-${NGINX_VER}.tar.gz
 
-## --> Create NGINX running user & group
-adduser -D -H -h ${NGINX_PREFIX_PATH} -s /sbin/nologin ${NGINX_USER} ${NGINX_GROUP}
-
 ## --> Build NGINX
 cd /tmp/nginx-${NGINX_VER}
 ./configure \
@@ -380,9 +382,12 @@ sed -i 's|DEFAULT_OPENSSL_BIN="openssl"|DEFAULT_OPENSSL_BIN="libressl"|' /tmp/ac
     --accountkey ${ACME_ACC_KEY} \
     --accountconf ${ACME_ACC_CONF} \
     --useragent "${ACME_USERAGENT}"
+### FIXME Why header is changed??
+### Patch acme.sh script header back to the default shell call
+sed -i 's|#!/bin/bash|#!/usr/bin/env sh|' ${ACME_HOME_PATH}/acme.sh
 
-## --> Set a symlink for easier usage
-ln -s /opt/acme/acme.sh /usr/bin/acme.sh
+## --> Set acme.sh reachable from standard PATH
+ln -s ${ACME_HOME_PATH}/acme.sh ${SWAF_BIN_SYMLINK_PATH}/acme.sh
 
 
 # Prepare configuration files

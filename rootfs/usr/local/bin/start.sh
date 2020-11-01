@@ -11,15 +11,18 @@
 # https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 
 
+# Show header
 cat /etc/motd
 
 # Deploy /etc/nginx after potentially mounted volume
 if [[ $(cat /opt/swaf/SWAF_IS_SET) == 0 ]]; then
     echo "+ Deploying sWAF configuration..."
     tar xz -f /opt/swaf/swafconfig_backup.tar.gz -C /etc/nginx
+    echo "+ Configuring container..."
     echo "1" > /opt/swaf/SWAF_IS_SET
 fi
 
+# Let's go
 echo "+ Starting sWAF..."
 /usr/sbin/nginx
 /bin/sh
