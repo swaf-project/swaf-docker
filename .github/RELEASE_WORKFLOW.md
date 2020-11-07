@@ -9,9 +9,10 @@ This document describes the workflow to apply for releasing.
     * Code is ready, documented, tested for versioning.
     * Update `CHANGELOG.md` according to the release version, release date and change details, and the [[Changelog Template](#changelog-template)] below.
     * Delete empty sections in `CHANGELOG.md`.
-    * Review `README.md` by removing roadmap-related messages ("Not Yet Implemented", "Roadmap vX.Y.Z", etc.).
+    * Review `README.md` by removing roadmap-related messages ("Not Yet Implemented", "Roadmap vX.Y.Z", etc.) and other updates if needed.
     * Commit `CHANGELOG.md`.
     * Commit `README.md`.
+    * Update [[Wiki/Build-Details](https://github.com/swaf-project/swaf-docker/wiki/Build-Details)] with last used versions.
 
 2. Tag & Release
 
@@ -46,11 +47,11 @@ Improvements:
 
 * <TEXT>
 
-Security Fixes:
+Security Issues:
 
 * <TEXT>
 
-Bug Fixes:
+Bugfixes:
 
 * <TEXT>
 ```
@@ -70,7 +71,7 @@ Bug Fixes:
 ```text
 <TEXT/COMMENT>
 
-Please get the Docker image on [[Docker Hub](https://hub.docker.com/r/swafproject/swaf)]: `docker pull swafproject/swaf`
+Please get the docker image on [[Docker Hub](https://hub.docker.com/r/swafproject/swaf)]: `docker pull swafproject/swaf`
 
 <RELEASE_NOTE_BODY_COPIED_FROM_CHANGELOG>
 ```

@@ -7,7 +7,11 @@
     \_____/   \_/  \_/     \____|
 ```
 
-**sWAF** is a **simple Web Application Firewall** [Docker image](https://hub.docker.com/r/swafproject/swaf), pre-configured to be easily used within your web services architecture. It runs [NGINX](https://www.nginx.com/) as dedicated reverse proxy enhanced by powerful WAF engines: [ModSecurity v3](https://www.modsecurity.org/) using [OWASP® ModSecurity Core Rule Set (CRS)](https://coreruleset.org/) rules and [NAXSI](https://github.com/nbs-system/naxsi).
+**sWAF** is a **simple Web Application Firewall** [docker image](https://hub.docker.com/r/swafproject/swaf), pre-configured to be easily used within your web services architecture.
+
+It runs [NGINX](https://www.nginx.com/) as a dedicated reverse proxy embedding powerful WAF engines: [ModSecurity 3](https://www.modsecurity.org/), using [OWASP® ModSecurity Core Rule Set (CRS)](https://coreruleset.org/) rules, and [NAXSI](https://github.com/nbs-system/naxsi). It uses [acme.sh](https://acme.sh/) for Let's Encrypt and others free CA support.
+
+[![dockeri.co](https://dockeri.co/image/swafproject/swaf)](https://hub.docker.com/r/swafproject/swaf)
 
 [![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf?sort=semver&logo=docker&color=blue)](https://hub.docker.com/r/swafproject/swaf)
 [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf)
@@ -19,58 +23,31 @@
 
 ### Why sWAF
 
-A lot of people are **self-hosting** their own cloud infrastructure (using Nextcloud, Synology, QNAP, a cloud lease server or home-made solutions...), but we can never be too much paranoid about web security for a lot of good reasons. Too much time security is left on background, or only by using some basics - but not sufficient - options, and applications are published to the Internet with fully exposed ports.
+A lot of people are **self-hosting** their own cloud infrastructure (using Nextcloud, Synology, QNAP, a cloud lease server or home-made solutions...), but we can never be too much paranoid about web security for a lot of good reasons. Too much time security is left on background, or only by using some basics - but not sufficient - options, and applications are front-faced to the big bad Internet.
 
-That's why **sWAF** is here to offer a **simple WAF** Docker image acting as an infrastructure security asset ready to be deployed wherever into your network infrastructure:
+That's why **sWAF** is here to offer a **simple WAF** docker image acting as an infrastructure security asset ready to be deployed wherever into your network infrastructure:
 
-**[Client]** --`hxxp(s)://drive.cloud.me`--> **[sWAF > rProxy+Security]** --`hxxp://a.b.c.d:6666`--> **[webservice1]**
+**[Client]** --`hxxp(s)://drive.example.com`--> **[sWAF > rProxy+Security]** --`hxxp://a.b.c.d:6666`--> **[webservice1]**
 
 ### Main Features
 
 * **NGINX** with:
-  + **LibreSSL** & **TLS 1.3** Support
-  + **ModSecurity** & **OWASP® ModSecurity Core Rule Set**
-  + **NAXSI** (_Not Yet Implemented_)
-* **Certbot** (_Not Yet Implemented_)
-* **logrotate** & **rsyslog** (_Not Yet Implemented_)
+  + **LibreSSL** & **TLS 1.3** support.
+  + **ModSecurity 3** & **OWASP® ModSecurity Core Rule Set**.
+  + **NAXSI**. (_Roadmap v0.2.0_)
+* **acme.sh** for **Let's Encrypt** and others free CA support. (_Roadmap v0.2.0_)
 
 ### Links
 
-* Homepage: [[swaf-project.github.io](https://swaf-project.github.io/)]
-* Git Repository: [[https://github.com/swaf-project/swaf-docker.git](https://github.com/swaf-project/swaf-docker.git)]
-* Docker Hub: [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)]
-* Issues Tracker: [[Bugs & Support](https://github.com/swaf-project/swaf-docker/issues)]
-* Documentation: [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] (_Not Yet Implemented_)
+* **Homepage**: [[swaf-project.github.io](https://swaf-project.github.io/)]
+* **Git Repository**: [[https://github.com/swaf-project/swaf-docker.git](https://github.com/swaf-project/swaf-docker.git)]
+* **Docker Hub**: [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)]
+* **Issues Tracker**: [[Bugs & Support](https://github.com/swaf-project/swaf-docker/issues)]
+* **Documentation**: [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] or [[Clone Wiki Documentation](https://github.com/swaf-project/swaf-docker.wiki.git)] to get a local copy.
 
-## Build Details
+## Getting Started
 
-Build on **[Alpine Linux](https://www.alpinelinux.org/)** [Docker image](https://hub.docker.com/_/alpine/).
-
-Details of used packages versions is listed [below](#build-packages-versions).
-
-### Releases
-
-* Releases are built in [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)] repository on Docker Hub. Checkout releases in [[Releases Page](https://github.com/swaf-project/swaf-docker/releases)].
-* `master` branch is continuously built in [[swafproject/swaf-dev](https://hub.docker.com/r/swafproject/swaf-dev)] repository on Docker Hub.
-
-### Development
-
-Last development image version (based on master head):
-
-[![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
-[![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
-
-### Changelog
-
-Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
-
-## Deploy & Configure
-
-See [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] for further details. **_(This part, as the Wiki, is under construction and will be seriously improved in future version)_**.
-
-### Run
-
-1. Get the sWAF Docker image:
+1. Get sWAF docker image:
 
     ```shell
     docker pull swafproject/swaf
@@ -79,186 +56,37 @@ See [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] for further detai
 2. Start a sWAF container:
 
     ```shell
-    docker run -d \
-        --name swaf \
-        --restart always \
-        --net host \
-        [-v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw] \
-        [-v <VOLUME_NGINX_LOG>:/var/log/nginx] \
-        swafproject/swaf
+    docker run -d --name swaf --restart always --net host swafproject/swaf
     ```
 
-    **where:**
-    * `<VOLUME_NGINX_CONFIG>`, the NGINX configuration volume on your Docker running host.
-    * `<VOLUME_NGINX_LOG>`, the NGINX logs volume on your Docker running host.
+3. Test it:
 
-    _Alternatively_, if you want to use a bridged network with standard web ports (_default use case_):
+    TODO Testing GIF
 
-    ```shell
-    docker run -d \
-        --name swaf \
-        --restart always \
-        --net bridge \
-        -p 80:80/tcp \
-        -p 443:443/tcp \
-        [-v <VOLUME_NGINX_CONFIG>:/etc/nginx:rw] \
-        [-v <VOLUME_NGINX_LOG>:/var/log/nginx] \
-        swafproject/swaf
-    ```
+4. Check out [[Wiki](https://github.com/swaf-project/swaf-docker/wiki)] documentation for all details about usage.
 
-### Configure
+## Releases Lifecycle
 
-If a volume is mounted on `/etc/nginx/`, you have access to the full NGINX configuration tree and so, able to customize your deployment.
+Build details on [[Wiki/Build-Details](https://github.com/swaf-project/swaf-docker/wiki/Build-Details)]
 
-You can also use default file editors like _vi_, _ed_, and also _nano_ which is installed within the image to edit te configuration.
+### Releases
 
-#### Configuration Files
+* Releases are built in [[swafproject/swaf](https://hub.docker.com/r/swafproject/swaf)] repository on Docker Hub. Checkout [[Releases Page](https://github.com/swaf-project/swaf-docker/releases)] for details.
 
-```text
-/etc/nginx/
-    ├── nginx.conf
-    ├── conf.d/
-    │   ├── main.conf
-    │   ├── events.conf
-    │   ├── http.conf
-    │   ├── http.srv.*.conf
-    │   ├── stream.conf
-    │   └── stream.srv.*.conf
-    ├── modsec.d/
-    │   ├── modsec_includes.conf
-    │   ├── modsecurity.conf
-    │   ├── owasp-modsecurity-crs/
-    │   │   ├── crs-setup.conf
-    │   │   ├── *.*
-    │   │   ├── **/*.*
-    │   │   └── rules/
-    │   │       ├── REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
-    │   │       ├── *.conf
-    │   │       ├── RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-    │   │       └── *.data
-    │   └── *.*
-    └── *.*
-```
+### Development
 
-|File|Description|
-|--|--|
-|nginx.conf|NGINX's configuration entrypoint. Defines contexts and *include* directives for below files. **_Should not be directly modified_**.|
-|../conf.d/**main.conf**|**main context** directives. Preset. Can be customized.|
-|../conf.d/**events.conf**|**events context** directives. Preset. Can be customized.|
-|../conf.d/**http.conf**|**http context** global directives affecting all HTTP virtual servers. Preset. Can be customized.|
-|../conf.d/**stream.conf**|**stream context** global directives affecting all stream virtual servers. Preset. Can be customized.|
-|../conf.d/**http.srv.*.conf**|Configuration files to define sections for HTTP virtual servers and upstreams. Can be splitted into multiple files according to your needs. Example file provided in _http.srv.service1.conf.example_.|
-|../conf.d/**stream.srv.*.conf**|Configuration files to define sections for stream virtual servers and upstreams. Can be splitted into multiple files according to your needs. Example file provided in _stream.srv.service2.conf.example_.|
-|../modesec.d/modsec_includes.conf|ModSecurity's configuration entrypoint. Defines *include* directives for below files. ***Should not be directly modified***. The order of file inclusion in the configuration should always be: **1. modsecurity.conf** / **2. crs-setup.conf** / **3. rules/*.conf (the CRS rule files)**.|
-|../modesec.d/**modsecurity.conf**|First ModSecurity loaded configuration file concerning ModSecurity's global settings. Preset. Can be customized.|
-|../owasp-modsecurity-crs/**crs-setup.conf**|Second ModSecurity loaded configuration file concerning CRS settings. Default settings. Can be customized.|
-|../owasp-modsecurity-crs/rules/**REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf**|To include customized request rules.|
-|../owasp-modsecurity-crs/rules/*.conf|Core Rule Set. ***Should not be directly modified***.|
-|../owasp-modsecurity-crs/rules/**RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf**|To include customized response rules.|
-|../owasp-modsecurity-crs/rules/*.data|Core Rule Set. ***Should not be directly modified***.|
+* `master` branch is continuously built in [[swafproject/swaf-dev](https://hub.docker.com/r/swafproject/swaf-dev)] repository on Docker Hub.
 
-***.default** files are set for restore needs.
+* Last development status (based on master HEAD):
 
-#### Custom web pages
+    [![Docker Image Version](https://img.shields.io/docker/v/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
+    [![Docker Image Size](https://img.shields.io/docker/image-size/swafproject/swaf-dev?sort=semver&logo=docker)](https://hub.docker.com/r/swafproject/swaf-dev)
 
-Default index page and error pages are customizable in `/var/lib/nginx/html/`.
+* **DO NOT use development image for your production, the only purpose of this image is for development!**
 
-Mountable as a volume for a more easy access.
+### Changelog
 
-#### Log files
-
-Paths are mountable as volumes to export logs:
-
-* `/var/log/nginx/` for NGINX logs.
-* `/var/log/modsec/` for ModSecurity logs.
-
-##### Error logs
-
-* Defined in NGINX main context configuration (`main.conf`):
-
-```nginx
-error_log /var/log/nginx/error.log info;
-```
-
-##### Access logs
-
-* Defined in NGINX HTTP context configuration (`http.conf`) for default access logging:
-
-```nginx
-log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                  '$status $body_bytes_sent "$http_referer" '
-                  '"$http_user_agent" "$http_x_forwarded_for"';
-
-access_log /var/log/nginx/access.log main;
-```
-
-* To define in NGINX server context configuration (`http.srv.*.conf`) for each virtual server:
-
-```nginx
-access_log /var/log/nginx/localhost.access.log main
-```
-
-##### ModSecurity Audit logs
-
-* Defined in ModSecurity global configuration (`modsecurity.conf`):
-
-```nginx
-SecAuditLog /var/log/modsec/modsec_audit.log
-```
-
-### Control
-
-* Test if the full NGINX configuration is valid before reloading:
-
-    ```shell
-    docker exec <CONTAINER> nginx -t
-    ```
-
-* Reload NGINX configuration file:
-
-    ```shell
-    docker exec <CONTAINER> nginx -s reload
-    ```
-
-    Needed also when TLS certificates have been created, issued or renewed.
-
-* Shut down gracefully NGINX service:
-
-    ```shell
-    docker exec <CONTAINER> nginx -s stop
-    ```
-
-* Shut down immediately (fast shutdown) NGINX service:
-
-    ```shell
-    docker exec <CONTAINER> nginx -s stop
-    ```
-
-* Start NGINX service:
-
-    ```shell
-    docker exec <CONTAINER> nginx
-    ```
-
-* Reopen NGINX log files:
-
-    ```shell
-    docker exec <CONTAINER> nginx -s reopen
-    ```
-
-## Build Your Own Image
-
-1. Get the last version of the code:
-
-    ```shell
-    git clone -b master --depth=1 https://github.com/swaf-project/swaf-docker
-    ```
-
-2. Build your own Docker image:
-
-    ```shell
-    docker build -t <MYSWAF> .
-    ```
+Change details are listed into [[CHANGELOG.md](CHANGELOG.md)].
 
 ## Contributing
 
@@ -266,80 +94,22 @@ Feel free to submit enhancement proposal via [[Pull Requets](https://github.com/
 
 Please check [[Contributing](https://github.com/MarcDiethelm/contributing)] by Marc Diethelm for more details about how to do.
 
-## Build Packages Versions
-
-Build on [[Alpine Linux](https://www.alpinelinux.org/)] version **3.12.0**.
-
-### Alpine System Packages
-
-|Alpine Package|Version|
-|--|--|
-|_libmagic_|5.38|
-|_ncurses-terminfo-base_|6.2_p20200523|
-|_ncurses-libs_|6.2_p20200523|
-|**nano**|4.9.3|
-|_ca-certificates_|20191127|
-|_nghttp2-libs_|1.41.0|
-|**libcurl**|7.69.1|
-|**curl**|7.69.1|
-|_expat_|2.2.9|
-|_pcre2_|10.35|
-|**git**|2.26.2|
-|**libatomic_ops**|7.6.10|
-|**libgcc**|9.3.0|
-|_brotli-libs_|1.0.9|
-|_libbz2_|1.0.8|
-|_libpng_|1.6.37|
-|_freetype_|2.10.2|
-|_libjpeg-turbo_|2.0.5|
-|_libwebp_|1.1.0|
-|**libgd**|2.3.0|
-|**libstdc++**|9.3.0|
-|_xz-libs_|5.2.5|
-|**libxml2**|2.9.10|
-|_libgpg-error_|1.37|
-|_libgcrypt_|1.8.5|
-|**libxslt**|1.1.34|
-|_lua5.1-libs_|5.1.5|
-|**lua5.1**|5.1.5|
-|**pcre**|8.44|
-|**yajl**|2.1.0|
-|**zlib**|1.2.11|
-
-**Bolded** packages are explicitly required to build sWAF. _Italic_ packages are their related dependencies.
-
-### Additional Compiled Libraries & Binaries
-
-|Library / Project|Version|
-|--|--|
-|[SSDEEP](https://github.com/ssdeep-project/ssdeep)|Last version from GitHub at build date|
-|[ModSecurity-nginx connector](https://github.com/SpiderLabs/ModSecurity-nginx)|Last version from GitHub at build date|
-|[ModSecurity](https://github.com/SpiderLabs/ModSecurity)|3.0.4|
-|[Core Rule Set](https://github.com/coreruleset/coreruleset)|3.3.0|
-|[NAXSI](https://github.com/nbs-system/naxsi)*|1.1a|
-|[LibreSSL](https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/)|3.2.1|
-|[NGINX](http://nginx.org/download/)|1.19.2|
-
-\* [[NGINX 3rd Party Modules](https://www.nginx.com/resources/wiki/modules/)]
-
-#### Compilation Resources
-
-* <https://github.com/SpiderLabs/ModSecurity/wiki/Compilation-recipes-for-v3.x>
-
 ## Credits
 
-This Docker image includes bundled packages and third-party resources. Below are their associated licensing terms:
+A project initiated by **[@styx0x6](https://github.com/styx0x6)**.
 
-* Libraries and tools are referenced in the [[Build Packages Versions](#build-packages-versions)] section.
+## License
 
-* The **sWAF Project** logo is a [photo](https://unsplash.com/photos/Yre4PGYWCNE) by [Sebastiaan Stam](https://unsplash.com/@sebastiaanstam) on [[Unsplash](https://unsplash.com/)] ([License](https://unsplash.com/license)).
+sWAF - A simple Web Application Firewall docker image.
 
-* **Shields.io** - Badges as a service [![CC0-1.0 license](http://i.creativecommons.org/p/zero/1.0/88x15.png)](https://raw.githubusercontent.com/badges/shields/master/LICENSE)
+Copyright © 2020  **[@styx0x6](https://github.com/styx0x6)**
 
-    <http://shields.io/>  
-    <https://github.com/badges/shields/>
+This file is part of sWAF. This software is licensed under the
+European Union Public License 1.2 (EUPL-1.2), published in Official Journal
+of the European Union (OJ) of 19 May 2017 and available in 23 official
+languages of the European Union.
 
-* **Simple Icons** - Icons as a service [![CC0-1.0 license](http://i.creativecommons.org/p/zero/1.0/88x15.png)](https://raw.githubusercontent.com/simple-icons/simple-icons/master/LICENSE.md)
+The English version is included with this software. Please see the following
+page for all the official versions of the EUPL-1.2:
 
-    <https://simpleicons.org/>  
-    <https://github.com/simple-icons/simple-icons/>
+<https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12>
