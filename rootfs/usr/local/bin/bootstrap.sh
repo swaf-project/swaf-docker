@@ -106,13 +106,15 @@ chown -R ${NGINX_USER}:${NGINX_GROUP} ${ACME_CHAL_ROOT_PATH}
 ## --> sWAF paths, configfiles & variables
 ### sWAF paths
 export SWAF_CONFIGFILES_SRC_PATH="/tmp"
-export SWAF_CONFIGFILES_WORK_PATH="/opt/swaf"
+export SWAF_HOME_PATH="/opt/swaf"
+export SWAF_BIN_PATH="${SWAF_HOME_PATH}/bin"
 export SWAF_BIN_SYMLINK_PATH="/usr/local/bin"
 ### sWAF configfiles
-export SWAF_CONFIGFILES_BACKUP_FILE="${SWAF_CONFIGFILES_WORK_PATH}/swafconfig_backup.tar.gz"
-export SWAF_IS_SET_FILE="${SWAF_CONFIGFILES_WORK_PATH}/SWAF_IS_SET"
+export SWAF_DEFAULT_CONFIG_BACKUP_FILE="${SWAF_HOME_PATH}/swaf_def_cnf_bck.tar.gz"
+export SWAF_IS_SET_FILE="${SWAF_HOME_PATH}/SWAF_IS_SET"
 ### Create sWAF folders
-mkdir -p ${SWAF_CONFIGFILES_WORK_PATH}
+mkdir -p ${SWAF_HOME_PATH}
+mkdir -p ${SWAF_BIN_PATH}
 
 
 # Check if this script is run on the proper Alpine version
@@ -178,7 +180,7 @@ apk add --no-cache --virtual .tmp-build-tools \
     zlib-dev
 
 
-# Build libraries
+# Build libraries & tools
 
 ## --> Build SSDEEP - Needed by ModSecurity v3
 cd /tmp
@@ -371,7 +373,7 @@ tar xvfz acme.sh-${ACME_VER}.tar.gz
 cd /tmp/acme.sh-${ACME_VER}
 ### Patch acme.sh script with LibreSSL which is retrocompatible with OpenSSL and used here in sWAF
 sed -i 's|DEFAULT_OPENSSL_BIN="openssl"|DEFAULT_OPENSSL_BIN="libressl"|' /tmp/acme.sh-${ACME_VER}/acme.sh
-### Launch installation
+### Install acme.sh
 ./acme.sh --install \
     `#### Install options:` \
     --noprofile \
@@ -472,7 +474,7 @@ echo "Preparing sWAF global configuration..."
 
 ## --> Package sWAF core configuration (NGINX)
 cd ${NGINX_ROOT_CONFIG_PATH}
-tar cz -f ${SWAF_CONFIGFILES_BACKUP_FILE} -C ${NGINX_ROOT_CONFIG_PATH} .
+tar cz -f ${SWAF_DEFAULT_CONFIG_BACKUP_FILE} -C ${NGINX_ROOT_CONFIG_PATH} .
 
 ## --> Set sWAF installation state
 echo "0" > ${SWAF_IS_SET_FILE}
