@@ -17,9 +17,11 @@ cat /etc/motd
 # Deploy /etc/nginx after potentially mounted volume
 if [[ $(cat /opt/swaf/SWAF_IS_SET) == 0 ]]; then
     echo "+ Deploying sWAF configuration..."
-    tar xz -f /opt/swaf/swafconfig_backup.tar.gz -C /etc/nginx
+        tar xz -f /opt/swaf/swaf_def_cnf_bck.tar.gz -C /etc/nginx
+    echo "+ Generating DH parameters for DHE ciphers..."
+        libressl dhparam -out /etc/ssl/dhparams.pem -dsaparam 4096
     echo "+ Configuring container..."
-    echo "1" > /opt/swaf/SWAF_IS_SET
+        echo "1" > /opt/swaf/SWAF_IS_SET
 fi
 
 # Let's go

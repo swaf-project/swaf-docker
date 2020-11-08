@@ -11,11 +11,14 @@ New Features:
 * NAXSI 1.2 compiled with NGINX as a dynamic module.
 * NAXSI core rules file staged from NAXSI 1.2.
 * acme.sh 2.8.7 for Let's Encrypt and others free CA support.
+
 TODO
 
 Improvements:
 
-* Improved documentation - Less in [README](https://github.com/swaf-project/swaf-docker), more in [Wiki](https://github.com/swaf-project/swaf-docker/wiki)
+* Improved documentation - Less in [README](https://github.com/swaf-project/swaf-docker), more in [Wiki](https://github.com/swaf-project/swaf-docker/wiki).
+* DH parameters for DHE ciphers automatically generated.
+
 TODO
 
 Security Issues:
@@ -24,7 +27,8 @@ TODO
 
 Bugfixes:
 
-* Patch acme.sh script with LibreSSL which is retrocompatible with OpenSSL and used here in sWAF.
+* Patch acme.sh script with LibreSSL, which is retrocompatible with OpenSSL and used here in sWAF.
+
 TODO
 
 ## Version 0.1.0 (2020-10-27)
