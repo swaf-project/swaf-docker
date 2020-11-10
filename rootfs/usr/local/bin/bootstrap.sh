@@ -371,14 +371,20 @@ tar xvfz acme.sh-${ACME_VER}.tar.gz
 
 ## --> Install acme.sh
 cd /tmp/acme.sh-${ACME_VER}
+### FIXME Use --openssl-bin instead
 ### Patch acme.sh script with LibreSSL which is retrocompatible with OpenSSL and used here in sWAF
 sed -i 's|DEFAULT_OPENSSL_BIN="openssl"|DEFAULT_OPENSSL_BIN="libressl"|' /tmp/acme.sh-${ACME_VER}/acme.sh
+### FIXME Hard-coded into acme.sh
+### Patch acme.sh script with LibreSSL instead of OpenSSL calls hard-coded twice
+sed -i 's|openssl x509 -noout -text -in "$_cf"|libressl x509 -noout -text -in "$_cf"|' /tmp/acme.sh-${ACME_VER}/acme.sh
+sed -i 's|openssl x509 -noout -text -in "$_cf" >/dev/null 2>&1|libressl x509 -noout -text -in "$_cf" >/dev/null 2>&1|' /tmp/acme.sh-${ACME_VER}/acme.sh
 ### Install acme.sh
 ./acme.sh --install \
     `#### Install options:` \
     --noprofile \
     --home ${ACME_HOME_PATH} \
     --config-home ${ACME_CONFIG_HOME_PATH} \
+    `#### FIXME https://github.com/acmesh-official/acme.sh/issues/3153`
     --cert-home ${ACME_CERT_HOME_PATH} \
     --accountemail "${ACME_ACC_EMAIL}" \
     --accountkey ${ACME_ACC_KEY} \
