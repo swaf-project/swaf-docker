@@ -11,13 +11,20 @@ New Features:
 * NAXSI 1.2 compiled with NGINX as a dynamic module.
 * NAXSI core rules file staged from NAXSI 1.2.
 * acme.sh 2.8.7 for Let's Encrypt and others free CA support.
+* acme.sh works with http-01 (in webroot mode only) and dns-01 challenges.
 
 TODO
 
 Improvements:
 
-* Improved documentation - Less in [README](https://github.com/swaf-project/swaf-docker), more in [Wiki](https://github.com/swaf-project/swaf-docker/wiki).
 * DH parameters for DHE ciphers automatically generated.
+* Reviewed default SSL params.
+* Set up the default server loaded aa the first one in `http.conf`.
+* Improved documentation - Less in [README](https://github.com/swaf-project/swaf-docker), more in [Wiki](https://github.com/swaf-project/swaf-docker/wiki).
+* Added all commands related to control ACME certificates in the documentation.
+* Example HTTP virtual server more ready to be used.
+* Updated default HTML pages.
+* `bootstrap.sh` and `start.sh` moved in `/opt/swaf/sbin`.
 
 TODO
 
@@ -28,6 +35,8 @@ TODO
 Bugfixes:
 
 * Patch acme.sh script with LibreSSL, which is retrocompatible with OpenSSL and used here in sWAF.
+* Patch acme.sh script header back to the default shell call.
+* Patch acme.sh script with LibreSSL instead of OpenSSL calls hard-coded twice.
 
 TODO
 

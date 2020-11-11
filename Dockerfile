@@ -14,23 +14,25 @@ FROM alpine:3.12.0
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="The sWAF Project Team <https://swaf-project.github.io>"
 LABEL org.opencontainers.image.vendor="https://github.com/swaf-project"
-# Others labels are dynamically set at built-time (See repo's GitHub ActionsLABEL org.opencontainers.image.authors="styx0x6 <https://github.com/styx0x6>")
+# Others labels are dynamically set at built-time (See repo's GitHub Actions)
 
 # Bootstrap sWAF
 ## --> Copy scripts
-COPY rootfs/usr/local/bin/bootstrap.sh /usr/local/bin/bootstrap.sh
-COPY rootfs/usr/local/bin/start.sh /usr/local/bin/start.sh
+COPY rootfs/opt/swaf/sbin/bootstrap.sh /tmp/bootstrap.sh
+COPY rootfs/opt/swaf/sbin/start.sh /tmp/start.sh
 ## --> Copy static files
 COPY rootfs/etc/motd /tmp/
 COPY rootfs/etc/nginx/*.conf* /tmp/
 COPY rootfs/etc/nginx/conf.d/*.conf* /tmp/
 COPY rootfs/etc/nginx/modsec.d/*.conf* /tmp/
 COPY rootfs/var/lib/nginx/html/*.html /tmp/
-## --> One RUN to build and avoid a multi-layered and oversized image
-RUN chmod +x /usr/local/bin/start.sh \
-    && chmod +x /usr/local/bin/bootstrap.sh \
-    && /usr/local/bin/bootstrap.sh
-
+## --> Only one RUN to avoid a multi-layered and oversized image
+RUN mkdir -p /opt/swaf/sbin \
+    && cp /tmp/start.sh /opt/swaf/sbin/start.sh \
+    && cp /tmp/bootstrap.sh /opt/swaf/sbin/bootstrap.sh \
+    && chmod +x /opt/swaf/sbin/start.sh \
+    && chmod +x /opt/swaf/sbin/bootstrap.sh \
+    && /opt/swaf/sbin/bootstrap.sh
 
 # Entrypoint
-ENTRYPOINT ["/usr/local/bin/start.sh"]
+ENTRYPOINT ["/opt/swaf/sbin/start.sh"]
