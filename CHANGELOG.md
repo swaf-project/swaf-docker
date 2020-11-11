@@ -12,6 +12,8 @@ New Features:
 * NAXSI core rules file staged from NAXSI 1.2.
 * acme.sh 2.8.7 for Let's Encrypt and others free CA support.
 * acme.sh works with http-01 (in webroot mode only) and dns-01 challenges.
+* Upgrade to LibreSSL 3.2.2 ([Release Notes](https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.2.2-relnotes.txt)).
+* Upgrade to NGINX 1.19.4 ([Release Notes](https://nginx.org/en/CHANGES)).
 
 TODO
 

@@ -24,8 +24,8 @@ export ALPINE_VER="3.12.0"
 export MODSECURITY_VER="3.0.4"
 export CRS_VER="3.3.0"
 export NAXSI_VER="1.2"
-export LIBRESSL_VER="3.2.1"
-export NGINX_VER="1.19.2"
+export LIBRESSL_VER="3.2.2"
+export NGINX_VER="1.19.4"
 export ACME_VER="2.8.7"
 
 ## --> ModSecurity paths
