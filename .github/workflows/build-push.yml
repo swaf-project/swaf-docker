@@ -31,7 +31,7 @@ jobs:
 
       - name: Repo metadata for labels
         id: repo
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4.1
         with:
           script: |
             const repo = await github.repos.get(context.repo)
