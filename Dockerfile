@@ -9,7 +9,7 @@
 # page for all the official versions of the EUPL-1.2:
 # https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
 
-FROM alpine:3.12.0
+FROM alpine:3.17.0
 
 # https://github.com/opencontainers/image-spec/blob/master/annotations.md
 LABEL org.opencontainers.image.authors="The sWAF Project Team <https://swaf-project.github.io>"
